@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prato Certo - Seu plano alimentar na medida certa</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --vd:#4a7c59;--vc:#e8f5ee;--vm:#b8ddc8;
+  --am:#d4a017;--ac:#fdf6e3;--pa:#f5f0e8;--pe:#e8e0d0;
+  --br:#fff;--tx:#2d3a2e;--ts:#5a6b5c;--bd:rgba(74,124,89,0.18);
+  --sh:0 2px 12px rgba(74,124,89,0.10);
+}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0ece4;color:var(--tx);min-height:100vh}
+.wrap{max-width:780px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.hdr{display:flex;align-items:center;gap:14px;padding:1.1rem 1.4rem;background:var(--vd);border-radius:16px;margin-bottom:1.2rem;box-shadow:var(--sh)}
+.logo{width:50px;height:50px;border-radius:50%;background:var(--ac);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr h1{font-size:21px;font-weight:700;color:#fff}
+.hdr p{font-size:11px;color:rgba(255,255,255,.78);margin-top:1px}
+.hdr-badge{margin-left:auto;background:var(--am);color:#fff;font-size:11px;font-weight:700;padding:4px 11px;border-radius:20px;white-space:nowrap}
+.totals{display:flex;gap:7px;margin-bottom:1.1rem}
+.tc{flex:1;background:var(--br);border:.5px solid var(--bd);border-radius:11px;padding:9px 6px;text-align:center;box-shadow:var(--sh)}
+.tc-lbl{font-size:10px;color:var(--ts);margin-bottom:2px}
+.tc-val{font-size:17px;font-weight:700;color:var(--vd)}
+.tc-un{font-size:10px;color:var(--ts)}
+.tabs{display:flex;gap:6px;margin-bottom:1.1rem;flex-wrap:wrap}
+.tab{flex:1;padding:9px 5px;font-size:12px;font-weight:700;border-radius:11px;border:1.5px solid var(--vm);background:var(--br);color:var(--vd);cursor:pointer;transition:all .15s;min-width:60px}
+.tab.active{background:var(--vd);color:#fff;border-color:var(--vd)}
+.tab:hover:not(.active){background:var(--vc)}
+.panel{display:none}.panel.active{display:block}
+/* meal cards */
+.mc{background:var(--br);border:.5px solid var(--bd);border-radius:14px;overflow:hidden;margin-bottom:9px;box-shadow:var(--sh)}
+.mh{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--pa);border-bottom:.5px solid var(--bd);cursor:pointer;transition:background .12s}
+.mh:hover{background:var(--pe)}
+.mt{font-size:11px;font-weight:700;color:var(--vd);background:var(--vc);padding:2px 8px;border-radius:20px;flex-shrink:0}
+.mn{font-size:14px;font-weight:700;color:var(--tx)}
+.mk{margin-left:auto;font-size:11px;color:var(--am);background:var(--ac);padding:2px 8px;border-radius:11px;white-space:nowrap}
+.chv{font-size:10px;color:var(--ts);margin-left:5px;display:inline-block;transition:transform .2s}
+.chv.open{transform:rotate(180deg)}
+.mb{padding:11px 13px;display:none}.mb.open{display:block}
+.ctabs{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.ctab{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);background:var(--br);color:var(--ts);cursor:pointer;transition:all .12s}
+.ctab.active{background:var(--vd);color:#fff;border-color:var(--vd)}
+.ctab:hover:not(.active){background:var(--vc)}
+.fl{display:none}.fl.active{display:block}
+.fi{display:flex;align-items:center;gap:9px;padding:7px 3px;border-bottom:.5px solid var(--bd);cursor:pointer;border-radius:4px;transition:background .1s}
+.fi:last-child{border-bottom:none}
+.fi:hover{background:var(--vc)}
+.fck{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--vm);background:var(--br);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.fi.sel .fck{background:var(--vd);border-color:var(--vd)}
+.fckm{display:none;color:#fff;font-size:10px;font-weight:700}
+.fi.sel .fckm{display:block}
+.fin{flex:1}
+.fn{font-size:13px;color:var(--tx);font-weight:600}
+.fm{font-size:11px;color:var(--ts);margin-top:1px}
+.fk{font-size:12px;font-weight:700;color:var(--am);flex-shrink:0}
+.sd{margin-top:7px;padding:6px 9px;background:var(--pa);border-radius:8px;display:flex;flex-wrap:wrap;gap:5px;min-height:28px;align-items:center}
+.sch{background:var(--vc);color:var(--vd);font-size:11px;padding:2px 8px;border-radius:11px;font-weight:600}
+.se{font-size:11px;color:var(--ts)}
+/* save section */
+.svsec{margin-top:1.1rem;background:var(--br);border:.5px solid var(--bd);border-radius:13px;padding:1rem 1.2rem;box-shadow:var(--sh)}
+.svsec h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:9px}
+.svrow{display:flex;gap:7px;margin-bottom:9px}
+.svinp{flex:1;padding:8px 11px;border:1px solid var(--bd);border-radius:9px;font-size:13px;color:var(--tx);background:var(--pa);outline:none;font-family:inherit}
+.svinp:focus{border-color:var(--vd)}
+.brow{display:flex;gap:7px}
+.bvd{flex:1;padding:9px;font-size:13px;font-weight:700;background:var(--vd);color:#fff;border:none;border-radius:11px;cursor:pointer;transition:opacity .15s;font-family:inherit}
+.bvd:hover{opacity:.88}
+.bam{flex:1;padding:9px;font-size:13px;font-weight:700;background:var(--am);color:#fff;border:none;border-radius:11px;cursor:pointer;transition:opacity .15s;font-family:inherit}
+.bam:hover{opacity:.88}
+/* auto */
+.awt{display:flex;flex-direction:column;gap:9px}
+.aco{background:var(--br);border:.5px solid var(--bd);border-radius:13px;padding:1rem 1.2rem;box-shadow:var(--sh)}
+.aco h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:9px}
+.cr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;align-items:center}
+.cl{font-size:12px;color:var(--ts);min-width:76px}
+.pb{font-size:11px;padding:5px 10px;border-radius:20px;border:1.5px solid var(--bd);background:var(--br);color:var(--ts);cursor:pointer;transition:all .12s;font-family:inherit}
+.pb.on{background:var(--vd);color:#fff;border-color:var(--vd)}
+.pb:hover:not(.on){background:var(--vc)}
+.gbtn{width:100%;padding:10px;font-size:14px;font-weight:700;background:var(--vd);color:#fff;border:none;border-radius:11px;cursor:pointer;margin-top:3px;transition:opacity .15s;font-family:inherit}
+.gbtn:hover{opacity:.88}
+.gm{background:var(--br);border:.5px solid var(--bd);border-radius:11px;padding:9px 13px;display:flex;gap:9px;align-items:flex-start;box-shadow:var(--sh)}
+.gt{font-size:11px;font-weight:700;color:var(--vd);background:var(--vc);padding:2px 8px;border-radius:20px;white-space:nowrap;margin-top:2px;flex-shrink:0}
+.gi{flex:1}
+.gn{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.gd{font-size:12px;color:var(--ts);line-height:1.6}
+.gkc{font-size:12px;font-weight:700;color:var(--am);margin-top:2px}
+/* historico */
+.hw{display:flex;flex-direction:column;gap:9px}
+.hemp{text-align:center;padding:2rem;color:var(--ts);font-size:14px;background:var(--br);border-radius:13px;box-shadow:var(--sh)}
+.hc{background:var(--br);border:.5px solid var(--bd);border-radius:13px;padding:1rem 1.2rem;box-shadow:var(--sh)}
+.hcn{font-size:15px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.hcd{font-size:12px;font-weight:700;color:var(--vd)}
+.hct{display:flex;gap:7px;margin:7px 0;flex-wrap:wrap}
+.hcp{font-size:11px;padding:2px 9px;border-radius:20px;background:var(--pa);color:var(--ts);border:.5px solid var(--bd)}
+.hcm{font-size:12px;color:var(--ts);line-height:1.8}
+.hca{display:flex;gap:7px;margin-top:9px}
+.bhp{padding:6px 14px;font-size:12px;font-weight:700;background:var(--vd);color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:inherit}
+.bhp:hover{opacity:.85}
+.bhd{padding:6px 14px;font-size:12px;font-weight:700;background:#fff0f0;color:#c00;border:1px solid #fcc;border-radius:7px;cursor:pointer;font-family:inherit}
+.bhd:hover{opacity:.85}
+/* receitas */
+.rfil{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.rf{font-size:11px;padding:5px 12px;border-radius:20px;border:1.5px solid var(--bd);background:var(--br);color:var(--ts);cursor:pointer;transition:all .12s;font-family:inherit}
+.rf.on{background:var(--vd);color:#fff;border-color:var(--vd)}
+.rf:hover:not(.on){background:var(--vc)}
+.rgrid{display:flex;flex-direction:column;gap:9px}
+.rcard{background:var(--br);border:.5px solid var(--bd);border-radius:13px;overflow:hidden;box-shadow:var(--sh)}
+.rchdl{display:flex;align-items:center;gap:9px;padding:10px 13px;background:var(--pa);border-bottom:.5px solid var(--bd);cursor:pointer}
+.rchdl:hover{background:var(--pe)}
+.rctit{font-size:14px;font-weight:700;color:var(--tx);flex:1}
+.rcbdg{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.bdg{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.bfit{background:#e8f5ee;color:#2d6a3f}
+.bdia{background:#fdf6e3;color:#7a5a00}
+.bglp{background:#ede8fe;color:#5a3e9a}
+.bkc{background:var(--ac);color:#7a5a00}
+.rcbdy{padding:13px;display:none}
+.rcbdy.open{display:block}
+.rcmeta{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
+.rcmp{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--pa);color:var(--ts);border:.5px solid var(--bd)}
+.rcst{font-size:11px;font-weight:700;color:var(--vd);margin:9px 0 5px;text-transform:uppercase;letter-spacing:.5px}
+.rcil{list-style:none}
+.rcil li{font-size:12px;color:var(--tx);padding:5px 0;border-bottom:.5px solid var(--bd);display:flex;gap:8px}
+.rcil li:last-child{border-bottom:none}
+.rciq{font-weight:700;color:var(--vd);min-width:90px;flex-shrink:0}
+.rcmd{font-size:13px;color:var(--ts);line-height:1.8;white-space:pre-wrap}
+.remp{text-align:center;padding:2rem;color:var(--ts);font-size:14px;background:var(--br);border-radius:13px;box-shadow:var(--sh)}
+/* admin */
+.alck{background:var(--br);border:.5px solid var(--bd);border-radius:13px;padding:1.5rem;text-align:center;box-shadow:var(--sh);max-width:340px;margin:2rem auto}
+.alck h3{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:7px}
+.alck p{font-size:12px;color:var(--ts);margin-bottom:14px}
+.alck input{width:100%;padding:10px 13px;border:1px solid var(--bd);border-radius:9px;font-size:14px;margin-bottom:9px;outline:none;text-align:center;letter-spacing:3px;font-family:inherit}
+.alck input:focus{border-color:var(--vd)}
+.apanel{display:flex;flex-direction:column;gap:11px}
+.aphdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.aphdr h3{font-size:16px;font-weight:700;color:var(--tx)}
+.bsair{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid var(--bd);background:var(--br);color:var(--ts);cursor:pointer;font-family:inherit}
+.bsair:hover{background:var(--pa)}
+.fcard{background:var(--br);border:.5px solid var(--bd);border-radius:13px;padding:1rem 1.2rem;box-shadow:var(--sh)}
+.fcard h4{font-size:14px;font-weight:700;color:var(--vd);margin-bottom:11px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg.full{grid-column:1/-1}
+.flbl{font-size:11px;font-weight:700;color:var(--ts)}
+.finp{padding:8px 10px;border:1px solid var(--bd);border-radius:7px;font-size:13px;color:var(--tx);background:var(--pa);outline:none;font-family:inherit;width:100%}
+.finp:focus{border-color:var(--vd);background:#fff}
+select.finp{cursor:pointer}
+textarea.finp{resize:vertical;min-height:85px}
+.ingrow{display:flex;gap:6px;margin-bottom:5px;align-items:center}
+.ingrow input{flex:1;padding:6px 9px;border:1px solid var(--bd);border-radius:7px;font-size:12px;background:var(--pa);outline:none;font-family:inherit}
+.ingrow input:focus{border-color:var(--vd);background:#fff}
+.bdeling{background:#fff0f0;color:#c00;border:1px solid #fcc;border-radius:6px;padding:4px 9px;font-size:13px;cursor:pointer;flex-shrink:0;font-family:inherit}
+.bading{font-size:12px;padding:6px 13px;border-radius:7px;border:1.5px dashed var(--vm);background:var(--vc);color:var(--vd);cursor:pointer;margin-top:2px;font-weight:700;font-family:inherit}
+.bading:hover{background:var(--vm)}
+.bsvrec{width:100%;padding:10px;font-size:14px;font-weight:700;background:var(--vd);color:#fff;border:none;border-radius:11px;cursor:pointer;margin-top:7px;transition:opacity .15s;font-family:inherit}
+.bsvrec:hover{opacity:.88}
+.bcnrec{width:100%;padding:8px;font-size:13px;font-weight:700;background:var(--pa);color:var(--ts);border:1px solid var(--bd);border-radius:11px;cursor:pointer;margin-top:5px;transition:opacity .15s;font-family:inherit}
+.bcnrec:hover{opacity:.85}
+.alist{display:flex;flex-direction:column;gap:7px}
+.arw{background:var(--br);border:.5px solid var(--bd);border-radius:9px;padding:9px 13px;display:flex;align-items:center;gap:9px;box-shadow:var(--sh)}
+.arn{flex:1;font-size:13px;font-weight:700;color:var(--tx)}
+.arc{font-size:11px;color:var(--ts)}
+.bedit{padding:5px 11px;font-size:12px;font-weight:700;background:var(--ac);color:#7a5a00;border:1px solid #e8d08a;border-radius:6px;cursor:pointer;font-family:inherit}
+.bedit:hover{opacity:.85}
+.bdelr{padding:5px 11px;font-size:12px;font-weight:700;background:#fff0f0;color:#c00;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-family:inherit}
+.bdelr:hover{opacity:.85}
+.note{margin-top:1rem;padding:9px 13px;background:var(--ac);border-radius:9px;border-left:3px solid var(--am);font-size:11px;color:#7a5a00;line-height:1.6}
+.perr{font-size:11px;color:#c00;margin-top:7px;display:none}
+
+/* CAMERA */
+.cam-wrap{display:flex;flex-direction:column;gap:12px}
+.cam-box{background:var(--br);border:.5px solid var(--bd);border-radius:14px;overflow:hidden;box-shadow:var(--sh)}
+.cam-preview{width:100%;aspect-ratio:4/3;background:#111;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.cam-preview video{width:100%;height:100%;object-fit:cover;display:none}
+.cam-preview video.active{display:block}
+.cam-preview canvas{width:100%;height:100%;object-fit:cover;display:none}
+.cam-preview canvas.active{display:block}
+.cam-placeholder{text-align:center;color:rgba(255,255,255,.5);padding:2rem}
+.cam-placeholder div{font-size:40px;margin-bottom:8px}
+.cam-placeholder p{font-size:13px}
+.cam-controls{display:flex;gap:8px;padding:12px;flex-wrap:wrap}
+.bcam{flex:1;padding:10px 8px;font-size:13px;font-weight:700;border:none;border-radius:11px;cursor:pointer;transition:opacity .15s;font-family:inherit;min-width:80px}
+.bcam:hover{opacity:.85}
+.bcam-vd{background:var(--vd);color:#fff}
+.bcam-am{background:var(--am);color:#fff}
+.bcam-gr{background:#6c757d;color:#fff}
+.bcam-rd{background:#dc3545;color:#fff}
+.cam-result{background:var(--br);border:.5px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh);display:none}
+.cam-result.visible{display:block}
+.cam-result h3{font-size:15px;font-weight:700;color:var(--vd);margin-bottom:10px}
+.cam-macros{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.cam-macro{flex:1;min-width:70px;background:var(--pa);border:.5px solid var(--bd);border-radius:10px;padding:8px 6px;text-align:center}
+.cam-macro-val{font-size:18px;font-weight:700;color:var(--vd)}
+.cam-macro-lbl{font-size:10px;color:var(--ts);margin-top:1px}
+.cam-foods{margin-bottom:12px}
+.cam-food-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:.5px solid var(--bd);font-size:13px}
+.cam-food-item:last-child{border-bottom:none}
+.cam-food-name{color:var(--tx);font-weight:500}
+.cam-food-kcal{color:var(--am);font-weight:700}
+.cam-obs{font-size:11px;color:var(--ts);line-height:1.6;background:var(--ac);padding:8px 10px;border-radius:8px;border-left:3px solid var(--am)}
+.cam-loading{text-align:center;padding:1.5rem;color:var(--ts)}
+.cam-loading .spin{font-size:28px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:8px}
+.cam-loading p{font-size:13px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cam-err{background:#fff0f0;border:.5px solid #fcc;border-radius:10px;padding:12px;font-size:13px;color:#c00;display:none}
+.cam-err.visible{display:block}
+.cam-tip{background:var(--vc);border:.5px solid var(--vm);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--vd);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="logo">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <path d="M14 3C14 3 4 8 4 17C4 22 8.5 25 14 25C19.5 25 24 22 24 17C24 8 14 3 14 3Z" fill="#4a7c59"/>
+      <path d="M14 4 Q14 14 14 24" stroke="#d4a017" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M14 14 Q11 12 8 9" stroke="#d4a017" stroke-width="1" stroke-linecap="round"/>
+      <path d="M14 17 Q17 15 20 12" stroke="#d4a017" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div>
+    <h1>Prato Certo</h1>
+    <p>Seu plano alimentar na medida certa</p>
+  </div>
+  <div class="hdr-badge">6 refeicoes &middot; 3 em 3h</div>
+</div>
+
+<div class="totals">
+  <div class="tc"><div class="tc-lbl">Calorias do dia</div><div class="tc-val" id="tot-k">0</div><div class="tc-un">kcal</div></div>
+  <div class="tc"><div class="tc-lbl">Proteina</div><div class="tc-val" id="tot-p">0</div><div class="tc-un">g</div></div>
+  <div class="tc"><div class="tc-lbl">Carboidrato</div><div class="tc-val" id="tot-c">0</div><div class="tc-un">g</div></div>
+  <div class="tc"><div class="tc-lbl">Gordura</div><div class="tc-val" id="tot-f">0</div><div class="tc-un">g</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="goTab('manual')">Montar</button>
+  <button class="tab" onclick="goTab('auto')">Gerar</button>
+  <button class="tab" onclick="goTab('historico')">Historico</button>
+  <button class="tab" onclick="goTab('receitas')">Receitas</button>
+  <button class="tab" onclick="goTab('admin')">Admin</button>
+  <button class="tab" onclick="goTab('camera')">Foto IA</button>
+</div>
+
+<!-- MANUAL -->
+<div class="panel active" id="panel-manual">
+  <div id="meals-wrap"></div>
+  <div class="svsec">
+    <h3>Salvar cardapio</h3>
+    <div class="svrow"><input class="svinp" type="text" id="plan-name" placeholder="Nome do cardapio (ex: Segunda-feira...)"/></div>
+    <div class="brow">
+      <button class="bvd" onclick="printPDF()">Gerar PDF para impressao</button>
+      <button class="bam" onclick="saveToHist()">Salvar no historico</button>
+    </div>
+  </div>
+  <div class="note">Expanda cada refeicao, escolha a categoria e selecione os alimentos. Os totais sao atualizados automaticamente.</div>
+</div>
+
+<!-- AUTO -->
+<div class="panel" id="panel-auto">
+  <div class="awt">
+    <div class="aco">
+      <h3>Suas preferencias</h3>
+      <div class="cr">
+        <span class="cl">Objetivo:</span>
+        <button class="pb on" onclick="selObj(this,'emagrecer')">Emagrecer</button>
+        <button class="pb" onclick="selObj(this,'manter')">Manter</button>
+        <button class="pb" onclick="selObj(this,'ganhar')">Ganhar massa</button>
+      </div>
+      <div class="cr">
+        <span class="cl">Restricoes:</span>
+        <button class="pb" onclick="togRest(this,'sem gluten')">Sem gluten</button>
+        <button class="pb" onclick="togRest(this,'sem lactose')">Sem lactose</button>
+        <button class="pb" onclick="togRest(this,'vegetariano')">Vegetariano</button>
+        <button class="pb" onclick="togRest(this,'low carb')">Low carb</button>
+      </div>
+      <button class="gbtn" onclick="generatePlan()">Gerar meu cardapio do dia</button>
+    </div>
+    <div id="gen-result"></div>
+    <div id="auto-sv" style="display:none">
+      <div class="svsec">
+        <h3>Salvar cardapio gerado</h3>
+        <div class="svrow"><input class="svinp" type="text" id="auto-name" placeholder="Nome do cardapio..."/></div>
+        <div class="brow">
+          <button class="bvd" onclick="printAutoPDF()">Gerar PDF para impressao</button>
+          <button class="bam" onclick="saveAutoToHist()">Salvar no historico</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORICO -->
+<div class="panel" id="panel-historico">
+  <div class="hw" id="hist-wrap">
+    <div class="hemp">Nenhum cardapio salvo ainda. Monte ou gere um cardapio e salve no historico.</div>
+  </div>
+</div>
+
+<!-- RECEITAS -->
+<div class="panel" id="panel-receitas">
+  <div class="rfil">
+    <button class="rf on" onclick="filtrarRec('todos',this)">Todas</button>
+    <button class="rf" onclick="filtrarRec('fit',this)">Fit</button>
+    <button class="rf" onclick="filtrarRec('dia',this)">Dia a dia</button>
+    <button class="rf" onclick="filtrarRec('glp',this)">GLP-1</button>
+  </div>
+  <div class="rgrid" id="rec-grid"></div>
+</div>
+
+<!-- ADMIN -->
+<div class="panel" id="panel-admin">
+  <div id="admin-lock">
+    <div class="alck">
+      <h3>Painel de Administracao</h3>
+      <p>Digite a senha para gerenciar as receitas</p>
+      <input type="password" id="admin-pass" placeholder="Senha" onkeydown="if(event.key==='Enter')checkPass()"/>
+      <button class="bvd" style="display:block;width:100%" onclick="checkPass()">Entrar</button>
+      <div class="perr" id="pass-err">Senha incorreta. Tente novamente.</div>
+    </div>
+  </div>
+  <div id="admin-area" style="display:none">
+    <div class="apanel">
+      <div class="aphdr">
+        <h3>Gerenciar Receitas</h3>
+        <button class="bsair" onclick="sairAdmin()">Sair</button>
+      </div>
+      <div class="fcard" id="form-rec">
+        <h4 id="form-tit">Nova Receita</h4>
+        <div class="fgrid">
+          <div class="fg full">
+            <span class="flbl">Nome da receita</span>
+            <input type="text" class="finp" id="r-nome" placeholder="Ex: Omelete de claras com espinafre"/>
+          </div>
+          <div class="fg">
+            <span class="flbl">Categoria</span>
+            <select class="finp" id="r-cat">
+              <option value="fit">Fit e saudavel</option>
+              <option value="dia">Dia a dia adaptada</option>
+              <option value="glp">Especifica GLP-1</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="flbl">Refeicao indicada</span>
+            <select class="finp" id="r-ref">
+              <option>Cafe da manha</option>
+              <option>Lanche da manha</option>
+              <option>Almoco</option>
+              <option>Lanche da tarde</option>
+              <option>Jantar</option>
+              <option>Ceia</option>
+              <option>Qualquer refeicao</option>
+            </select>
+          </div>
+          <div class="fg">
+            <span class="flbl">Tempo de preparo</span>
+            <input type="text" class="finp" id="r-tempo" placeholder="Ex: 15 minutos"/>
+          </div>
+          <div class="fg">
+            <span class="flbl">Porcoes</span>
+            <input type="text" class="finp" id="r-porcoes" placeholder="Ex: 2 porcoes"/>
+          </div>
+          <div class="fg">
+            <span class="flbl">Calorias por porcao (kcal)</span>
+            <input type="number" class="finp" id="r-kcal" placeholder="Ex: 280"/>
+          </div>
+          <div class="fg">
+            <span class="flbl">Proteinas por porcao (g)</span>
+            <input type="number" class="finp" id="r-prot" placeholder="Ex: 22"/>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:9px">
+          <span class="flbl">Ingredientes</span>
+          <div id="ing-list"></div>
+          <button class="bading" onclick="addIng('','')">+ Adicionar ingrediente</button>
+        </div>
+        <div class="fg" style="margin-bottom:4px">
+          <span class="flbl">Modo de preparo</span>
+          <textarea class="finp" id="r-modo" placeholder="Descreva o passo a passo..."></textarea>
+        </div>
+        <input type="hidden" id="r-eid" value=""/>
+        <button class="bsvrec" onclick="salvarRec()">Salvar receita</button>
+        <button class="bcnrec" id="btn-cn" style="display:none" onclick="cancelarEdit()">Cancelar edicao</button>
+      </div>
+      <div class="fcard">
+        <h4>Receitas cadastradas</h4>
+        <div class="alist" id="admin-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- CAMERA / FOTO IA -->
+<div class="panel" id="panel-camera">
+  <div class="cam-wrap">
+    <div class="cam-tip">
+      Aponte a camera para sua refeicao e deixe a IA estimar as calorias e nutrientes automaticamente.
+    </div>
+    <div class="cam-box">
+      <div class="cam-preview" id="cam-preview">
+        <video id="cam-video" autoplay playsinline></video>
+        <canvas id="cam-canvas"></canvas>
+        <div class="cam-placeholder" id="cam-ph">
+          <div>&#127757;</div>
+          <p>Clique em "Abrir Camera" para comecar</p>
+        </div>
+      </div>
+      <div class="cam-controls">
+        <button class="bcam bcam-vd" id="btn-open-cam" onclick="abrirCamera()">&#128247; Abrir Camera</button>
+        <button class="bcam bcam-am" id="btn-foto" onclick="tirarFoto()" style="display:none">&#9711; Tirar Foto</button>
+        <button class="bcam bcam-gr" id="btn-nova" onclick="novaFoto()" style="display:none">&#8635; Nova Foto</button>
+        <button class="bcam bcam-rd" id="btn-fechar" onclick="fecharCamera()" style="display:none">&#10005; Fechar</button>
+      </div>
+    </div>
+    <div class="cam-loading" id="cam-loading" style="display:none">
+      <div class="spin">&#129302;</div>
+      <p>Analisando sua refeicao com IA...</p>
+    </div>
+    <div class="cam-err" id="cam-err"></div>
+    <div class="cam-result" id="cam-result">
+      <h3>&#127859; Analise Nutricional Estimada</h3>
+      <div class="cam-macros" id="cam-macros"></div>
+      <div class="cam-foods" id="cam-foods"></div>
+      <div class="cam-obs" id="cam-obs"></div>
+    </div>
+  </div>
+</div>
+</div><!-- /wrap -->
+
+<script>
+// ============================================================
+// DADOS DE REFEICOES
+// ============================================================
+var meals = [
+  {name:"Cafe da manha", time:"07:00", cats:{
+    "Ovos":[
+      {n:"Ovo cozido",w:"1 un (50g)",k:77,p:6,c:1,f:5},
+      {n:"Ovo mexido c/ azeite",w:"2 ovos (110g)",k:182,p:12,c:1,f:14},
+      {n:"Omelete simples",w:"2 ovos (110g)",k:160,p:13,c:1,f:11},
+      {n:"Ovo estrelado",w:"1 un (50g)",k:90,p:6,c:0,f:7}
+    ],
+    "Paes e Tapioca":[
+      {n:"Pao integral",w:"1 fatia (30g)",k:75,p:3,c:13,f:1},
+      {n:"Tapioca",w:"1 un media (70g)",k:130,p:1,c:31,f:0},
+      {n:"Torrada integral",w:"2 un (30g)",k:80,p:3,c:15,f:1},
+      {n:"Pao frances",w:"1 un (50g)",k:135,p:4,c:27,f:1},
+      {n:"Beiju",w:"1 un (60g)",k:115,p:1,c:27,f:0}
+    ],
+    "Laticinios":[
+      {n:"Iogurte natural",w:"200ml",k:118,p:6,c:9,f:6},
+      {n:"Iogurte grego integral",w:"100g",k:97,p:9,c:4,f:5},
+      {n:"Queijo minas frescal",w:"1 fatia (30g)",k:67,p:5,c:1,f:5},
+      {n:"Requeijao light",w:"1 col sopa (20g)",k:35,p:2,c:1,f:2},
+      {n:"Leite desnatado",w:"200ml",k:68,p:7,c:10,f:0}
+    ],
+    "Frutas":[
+      {n:"Banana prata",w:"1 un media (90g)",k:83,p:1,c:21,f:0},
+      {n:"Mamao formosa",w:"1 fatia (150g)",k:60,p:1,c:15,f:0},
+      {n:"Maca",w:"1 un media (130g)",k:68,p:0,c:18,f:0},
+      {n:"Abacate",w:"3 col sopa (60g)",k:96,p:1,c:3,f:9},
+      {n:"Morango",w:"10 un (120g)",k:39,p:1,c:9,f:0}
+    ],
+    "Cereais e Aveia":[
+      {n:"Aveia em flocos",w:"3 col sopa (30g)",k:115,p:4,c:20,f:2},
+      {n:"Granola sem acucar",w:"2 col sopa (25g)",k:110,p:3,c:18,f:3},
+      {n:"Chia",w:"1 col sopa (10g)",k:49,p:2,c:4,f:3},
+      {n:"Linhaca dourada",w:"1 col sopa (10g)",k:55,p:2,c:3,f:4}
+    ],
+    "Bebidas":[
+      {n:"Cafe sem acucar",w:"1 xicara (50ml)",k:2,p:0,c:0,f:0},
+      {n:"Suco de laranja natural",w:"200ml",k:88,p:1,c:20,f:0},
+      {n:"Cha verde",w:"200ml",k:2,p:0,c:0,f:0},
+      {n:"Leite com cafe",w:"200ml",k:90,p:6,c:11,f:2}
+    ],
+    "Pastas e Extras":[
+      {n:"Manteiga",w:"1 col cha (5g)",k:36,p:0,c:0,f:4},
+      {n:"Geleia sem acucar",w:"1 col sopa (15g)",k:22,p:0,c:5,f:0},
+      {n:"Pasta de amendoim",w:"1 col sopa (15g)",k:88,p:4,c:3,f:7},
+      {n:"Mel",w:"1 col cha (7g)",k:21,p:0,c:6,f:0}
+    ]
+  }},
+  {name:"Lanche da manha", time:"10:00", cats:{
+    "Frutas":[
+      {n:"Banana prata",w:"1 un (90g)",k:83,p:1,c:21,f:0},
+      {n:"Maca",w:"1 un (130g)",k:68,p:0,c:18,f:0},
+      {n:"Pera",w:"1 un (130g)",k:71,p:0,c:18,f:0},
+      {n:"Uva",w:"1 cacho peq (100g)",k:69,p:1,c:17,f:0},
+      {n:"Manga",w:"meia un (150g)",k:96,p:1,c:24,f:0},
+      {n:"Melao",w:"1 fatia (150g)",k:52,p:1,c:13,f:0}
+    ],
+    "Oleaginosas":[
+      {n:"Castanha-do-para",w:"2 un (10g)",k:65,p:1,c:1,f:6},
+      {n:"Amendoas",w:"10 un (14g)",k:82,p:3,c:3,f:7},
+      {n:"Amendoim torrado",w:"1 col sopa (15g)",k:88,p:4,c:3,f:7},
+      {n:"Mix de castanhas",w:"1 punhado (20g)",k:120,p:3,c:4,f:11},
+      {n:"Nozes",w:"3 un (15g)",k:98,p:2,c:2,f:10}
+    ],
+    "Laticinios":[
+      {n:"Iogurte grego integral",w:"100g",k:97,p:9,c:4,f:5},
+      {n:"Queijo minas frescal",w:"1 fatia (30g)",k:67,p:5,c:1,f:5},
+      {n:"Kefir",w:"200ml",k:110,p:7,c:12,f:3}
+    ],
+    "Biscoitos e Barras":[
+      {n:"Biscoito integral",w:"4 un (30g)",k:120,p:2,c:22,f:3},
+      {n:"Barra de proteina",w:"1 un (40g)",k:160,p:20,c:15,f:3},
+      {n:"Biscoito de arroz",w:"2 un (18g)",k:70,p:1,c:16,f:0}
+    ],
+    "Bebidas":[
+      {n:"Agua de coco",w:"200ml",k:38,p:0,c:9,f:0},
+      {n:"Suco verde",w:"200ml",k:60,p:2,c:12,f:0},
+      {n:"Cha gelado",w:"300ml",k:5,p:0,c:1,f:0}
+    ]
+  }},
+  {name:"Almoco", time:"13:00", cats:{
+    "Proteinas":[
+      {n:"Frango grelhado",w:"1 file (120g)",k:163,p:31,c:0,f:4},
+      {n:"Carne bovina magra",w:"1 bife (100g)",k:176,p:26,c:0,f:7},
+      {n:"Tilapia grelhada",w:"1 file (120g)",k:132,p:27,c:0,f:2},
+      {n:"Atum ao natural",w:"meia lata (80g)",k:88,p:19,c:0,f:1},
+      {n:"Ovo cozido",w:"2 un (100g)",k:155,p:13,c:1,f:11},
+      {n:"Sardinha ao molho",w:"meia lata (75g)",k:135,p:15,c:0,f:8}
+    ],
+    "Arroz e Massas":[
+      {n:"Arroz branco cozido",w:"4 col sopa (120g)",k:156,p:3,c:34,f:0},
+      {n:"Arroz integral cozido",w:"4 col sopa (120g)",k:139,p:3,c:29,f:1},
+      {n:"Macarrao integral cozido",w:"1 concha (120g)",k:148,p:5,c:29,f:1},
+      {n:"Quinoa cozida",w:"4 col sopa (100g)",k:120,p:4,c:21,f:2}
+    ],
+    "Feijao e Graos":[
+      {n:"Feijao carioca cozido",w:"1 concha (80g)",k:82,p:5,c:15,f:0},
+      {n:"Feijao preto cozido",w:"1 concha (80g)",k:83,p:5,c:15,f:0},
+      {n:"Lentilha cozida",w:"1 concha (80g)",k:90,p:6,c:15,f:0},
+      {n:"Grao-de-bico cozido",w:"1 concha (80g)",k:116,p:6,c:19,f:2}
+    ],
+    "Saladas":[
+      {n:"Alface com tomate e pepino",w:"1 prato raso (100g)",k:20,p:1,c:4,f:0},
+      {n:"Rucula com azeite",w:"1 prato raso (80g)",k:35,p:1,c:3,f:2},
+      {n:"Cenoura ralada",w:"2 col sopa (40g)",k:17,p:0,c:4,f:0},
+      {n:"Beterraba cozida",w:"2 col sopa (50g)",k:24,p:1,c:6,f:0},
+      {n:"Mix de folhas verdes",w:"1 prato (80g)",k:18,p:1,c:3,f:0}
+    ],
+    "Legumes Cozidos":[
+      {n:"Brocolis no vapor",w:"1 escumadeira (80g)",k:27,p:2,c:5,f:0},
+      {n:"Abobrinha refogada",w:"1 escumadeira (80g)",k:22,p:1,c:4,f:0},
+      {n:"Couve refogada",w:"2 col sopa (30g)",k:15,p:1,c:2,f:0},
+      {n:"Chuchu cozido",w:"1 escumadeira (80g)",k:19,p:0,c:5,f:0},
+      {n:"Vagem cozida",w:"1 escumadeira (80g)",k:25,p:2,c:5,f:0}
+    ],
+    "Acompanhamentos":[
+      {n:"Batata doce cozida",w:"1 un peq (100g)",k:86,p:2,c:20,f:0},
+      {n:"Mandioca cozida",w:"1 pedaco (100g)",k:158,p:1,c:38,f:0},
+      {n:"Farofa",w:"2 col sopa (20g)",k:72,p:1,c:16,f:0},
+      {n:"Azeite de oliva",w:"1 col sopa (10ml)",k:88,p:0,c:0,f:10}
+    ]
+  }},
+  {name:"Lanche da tarde", time:"16:00", cats:{
+    "Cuscuz":[
+      {n:"Cuscuz com ovo mexido",w:"1 porcao (130g)",k:200,p:9,c:33,f:4},
+      {n:"Cuscuz com queijo",w:"1 porcao (120g)",k:190,p:7,c:33,f:4},
+      {n:"Cuscuz com sardinha",w:"1 porcao (130g)",k:210,p:12,c:30,f:5},
+      {n:"Cuscuz simples",w:"1 porcao (100g)",k:152,p:4,c:31,f:2}
+    ],
+    "Tapioca e Pao":[
+      {n:"Tapioca com frango",w:"1 un (100g)",k:190,p:18,c:27,f:2},
+      {n:"Tapioca com queijo",w:"1 un (90g)",k:185,p:8,c:32,f:4},
+      {n:"Pao integral com atum",w:"1 sanduiche (100g)",k:175,p:16,c:19,f:3},
+      {n:"Wrap integral com frango",w:"1 un (120g)",k:220,p:18,c:28,f:4}
+    ],
+    "Frutas e Iogurte":[
+      {n:"Iogurte grego com frutas",w:"150g",k:140,p:10,c:16,f:4},
+      {n:"Salada de frutas",w:"1 taca (150g)",k:80,p:1,c:19,f:0},
+      {n:"Banana com aveia",w:"120g",k:170,p:4,c:38,f:1},
+      {n:"Vitamina de banana",w:"300ml",k:180,p:6,c:33,f:3}
+    ],
+    "Oleaginosas e Barras":[
+      {n:"Mix de castanhas",w:"1 punhado (25g)",k:148,p:4,c:5,f:13},
+      {n:"Barra de proteina",w:"1 un (45g)",k:180,p:20,c:16,f:4},
+      {n:"Pasta de amendoim com torrada",w:"30g",k:165,p:7,c:12,f:11}
+    ],
+    "Bebidas":[
+      {n:"Suco verde",w:"300ml",k:80,p:2,c:16,f:0},
+      {n:"Agua de coco",w:"300ml",k:57,p:1,c:13,f:0},
+      {n:"Vitamina de abacate",w:"250ml",k:210,p:4,c:18,f:14}
+    ]
+  }},
+  {name:"Jantar", time:"19:00", cats:{
+    "Proteinas":[
+      {n:"Frango grelhado",w:"1 file (120g)",k:163,p:31,c:0,f:4},
+      {n:"Omelete de 3 ovos",w:"150g",k:230,p:18,c:2,f:16},
+      {n:"Peixe assado",w:"1 file (120g)",k:140,p:27,c:0,f:3},
+      {n:"Carne moida refogada",w:"100g",k:185,p:22,c:3,f:9},
+      {n:"Atum com azeite",w:"1 lata (120g)",k:170,p:26,c:0,f:7}
+    ],
+    "Sopas e Caldos":[
+      {n:"Sopa de legumes com frango",w:"1 tigela (300ml)",k:180,p:16,c:20,f:3},
+      {n:"Caldo de feijao",w:"1 tigela (250ml)",k:120,p:7,c:20,f:1},
+      {n:"Sopa de lentilha",w:"1 tigela (300ml)",k:160,p:10,c:25,f:2},
+      {n:"Creme de abobora",w:"1 tigela (300ml)",k:130,p:4,c:22,f:3}
+    ],
+    "Acompanhamentos Leves":[
+      {n:"Batata doce assada",w:"1 un peq (100g)",k:86,p:2,c:20,f:0},
+      {n:"Arroz integral",w:"3 col sopa (90g)",k:104,p:2,c:22,f:1},
+      {n:"Pure de batata doce",w:"3 col sopa (100g)",k:90,p:2,c:21,f:0},
+      {n:"Mandioca cozida",w:"1 pedaco (100g)",k:158,p:1,c:38,f:0}
+    ],
+    "Saladas e Legumes":[
+      {n:"Salada de folhas verdes",w:"1 prato (100g)",k:20,p:1,c:3,f:0},
+      {n:"Legumes no vapor",w:"1 escumadeira (100g)",k:35,p:2,c:7,f:0},
+      {n:"Couve refogada",w:"2 col sopa (30g)",k:15,p:1,c:2,f:0},
+      {n:"Tomate com pepino e azeite",w:"100g",k:45,p:1,c:6,f:2}
+    ],
+    "Opcoes Rapidas":[
+      {n:"Ovos mexidos com legumes",w:"150g",k:190,p:14,c:8,f:12},
+      {n:"Salada de atum com tomate",w:"200g",k:150,p:20,c:7,f:4},
+      {n:"Frango desfiado com couve",w:"150g",k:170,p:28,c:4,f:4}
+    ]
+  }},
+  {name:"Ceia", time:"22:00", cats:{
+    "Laticinios Leves":[
+      {n:"Iogurte natural desnatado",w:"200g",k:110,p:8,c:15,f:2},
+      {n:"Iogurte grego",w:"100g",k:97,p:9,c:4,f:5},
+      {n:"Queijo cottage",w:"3 col sopa (80g)",k:80,p:12,c:3,f:2},
+      {n:"Kefir",w:"200ml",k:110,p:7,c:12,f:3},
+      {n:"Leite morno desnatado",w:"200ml",k:68,p:7,c:10,f:0}
+    ],
+    "Frutas Leves":[
+      {n:"Banana prata",w:"1 un peq (70g)",k:64,p:1,c:16,f:0},
+      {n:"Maca",w:"meia un (65g)",k:34,p:0,c:9,f:0},
+      {n:"Morango",w:"8 un (100g)",k:33,p:1,c:8,f:0},
+      {n:"Mamao",w:"1 fatia peq (100g)",k:40,p:1,c:10,f:0}
+    ],
+    "Oleaginosas":[
+      {n:"Castanha-do-para",w:"2 un (10g)",k:65,p:1,c:1,f:6},
+      {n:"Amendoas",w:"8 un (12g)",k:70,p:3,c:2,f:6},
+      {n:"Mix de sementes",w:"1 col sopa (10g)",k:52,p:2,c:3,f:4}
+    ],
+    "Chas e Bebidas":[
+      {n:"Cha de camomila",w:"200ml",k:2,p:0,c:0,f:0},
+      {n:"Cha de erva-doce",w:"200ml",k:2,p:0,c:0,f:0},
+      {n:"Agua morna com limao",w:"200ml",k:4,p:0,c:1,f:0},
+      {n:"Leite de amendoas",w:"200ml",k:30,p:1,c:1,f:3}
+    ]
+  }}
+];
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+var sel = {};        // "mi_fi" -> food obj
+var catAtiva = {};   // mi -> catName
+var mealOpen = {};   // mi -> bool
+var prefObj = "emagrecer";
+var prefRest = [];
+var lastPlan = null;
+var editId = null;
+var recFiltro = "todos";
+var ADMIN_PASS = "prato2024";
+var adminLogado = false;
+
+// ============================================================
+// TABS
+// ============================================================
+function goTab(t) {
+  var tabs = document.querySelectorAll(".tab");
+  var names = ["manual","auto","historico","receitas","admin","camera"];
+  tabs.forEach(function(b,i){ b.classList.toggle("active", names[i]===t); });
+  names.forEach(function(n){ var el=document.getElementById("panel-"+n); if(el) el.classList.toggle("active", n===t); });
+  if(t==="historico") renderHist();
+  if(t==="receitas") renderReceitas();
+  if(t==="admin") renderAdminList();
+  if(t==="camera") initCamera();
+}
+
+// ============================================================
+// BUILD MANUAL MEALS
+// ============================================================
+function buildManual() {
+  var wrap = document.getElementById("meals-wrap");
+  meals.forEach(function(meal, mi) {
+    catAtiva[mi] = Object.keys(meal.cats)[0];
+    mealOpen[mi] = (mi === 0);
+    var card = document.createElement("div");
+    card.className = "mc";
+    card.id = "mc" + mi;
+
+    var cats = Object.keys(meal.cats);
+    var catBtns = cats.map(function(cat) {
+      var act = (cat === catAtiva[mi]) ? " active" : "";
+      return '<button class="ctab' + act + '" onclick="selCat(' + mi + ',' + cats.indexOf(cat) + ',this)">' + cat + '</button>';
+    }).join("");
+
+    var foodLists = cats.map(function(cat, ci) {
+      var foods = meal.cats[cat];
+      var act = (ci === 0) ? " active" : "";
+      var items = foods.map(function(f, fi) {
+        var key = mi + "_" + cat + "_" + fi;
+        return '<div class="fi" id="fi_' + mi + '_' + ci + '_' + fi + '" onclick="togFood(' + mi + ',' + ci + ',' + fi + ')">'
+          + '<div class="fck"><span class="fckm">v</span></div>'
+          + '<div class="fin">'
+          + '<div class="fn">' + f.n + '</div>'
+          + '<div class="fm">' + f.w + ' &nbsp;·&nbsp; Prot: ' + f.p + 'g &nbsp;·&nbsp; Carb: ' + f.c + 'g &nbsp;·&nbsp; Gord: ' + f.f + 'g</div>'
+          + '</div>'
+          + '<div class="fk">' + f.k + ' kcal</div>'
+          + '</div>';
+      }).join("");
+      return '<div class="fl' + act + '" id="fl_' + mi + '_' + ci + '">' + items + '</div>';
+    }).join("");
+
+    var openCls = mealOpen[mi] ? " open" : "";
+    card.innerHTML = ''
+      + '<div class="mh" onclick="togMeal(' + mi + ')">'
+      + '<span class="mt">' + meal.time + '</span>'
+      + '<span class="mn">' + meal.name + '</span>'
+      + '<span class="mk" id="mk' + mi + '">0 kcal</span>'
+      + '<span class="chv' + openCls + '" id="chv' + mi + '">v</span>'
+      + '</div>'
+      + '<div class="mb' + openCls + '" id="mb' + mi + '">'
+      + '<div class="ctabs">' + catBtns + '</div>'
+      + foodLists
+      + '<div class="sd" id="sd' + mi + '"><span class="se">Nenhum item selecionado</span></div>'
+      + '</div>';
+    wrap.appendChild(card);
+  });
+}
+
+function togMeal(mi) {
+  mealOpen[mi] = !mealOpen[mi];
+  document.getElementById("mb"+mi).classList.toggle("open", mealOpen[mi]);
+  document.getElementById("chv"+mi).classList.toggle("open", mealOpen[mi]);
+}
+
+function selCat(mi, ci, btn) {
+  catAtiva[mi] = ci;
+  var body = document.getElementById("mb"+mi);
+  body.querySelectorAll(".ctab").forEach(function(b,i){ b.classList.toggle("active", i===ci); });
+  body.querySelectorAll(".fl").forEach(function(fl,i){ fl.classList.toggle("active", i===ci); });
+}
+
+function togFood(mi, ci, fi) {
+  var key = mi+"_"+ci+"_"+fi;
+  var el = document.getElementById("fi_"+mi+"_"+ci+"_"+fi);
+  var food = meals[mi].cats[Object.keys(meals[mi].cats)[ci]][fi];
+  if(sel[key]) {
+    delete sel[key];
+    el.classList.remove("sel");
+  } else {
+    sel[key] = {k:food.k, p:food.p, c:food.c, f:food.f, name:food.n, w:food.w};
+    el.classList.add("sel");
+  }
+  updateMealKcal(mi);
+  updateTotals();
+  updateSelDisplay(mi);
+}
+
+function updateMealKcal(mi) {
+  var kt = 0;
+  Object.keys(sel).forEach(function(k){ if(k.startsWith(mi+"_")) kt += sel[k].k; });
+  document.getElementById("mk"+mi).textContent = kt + " kcal";
+}
+
+function updateTotals() {
+  var tk=0, tp=0, tc=0, tf=0;
+  Object.values(sel).forEach(function(v){ tk+=v.k; tp+=v.p; tc+=v.c; tf+=v.f; });
+  document.getElementById("tot-k").textContent = tk;
+  document.getElementById("tot-p").textContent = tp;
+  document.getElementById("tot-c").textContent = tc;
+  document.getElementById("tot-f").textContent = tf;
+}
+
+function updateSelDisplay(mi) {
+  var el = document.getElementById("sd"+mi);
+  var items = Object.keys(sel).filter(function(k){ return k.startsWith(mi+"_"); }).map(function(k){ return sel[k].name; });
+  if(items.length===0) { el.innerHTML = '<span class="se">Nenhum item selecionado</span>'; return; }
+  el.innerHTML = items.map(function(n){ return '<span class="sch">'+n+'</span>'; }).join("");
+}
+
+// ============================================================
+// AUTO PLAN
+// ============================================================
+var autoPlans = {
+  emagrecer:[
+    {m:"Cafe da manha",t:"07:00",its:[{n:"Ovo mexido com azeite",w:"2 ovos (110g)",k:182,p:12,c:1,f:14},{n:"Pao integral",w:"1 fatia (30g)",k:75,p:3,c:13,f:1},{n:"Mamao formosa",w:"1 fatia (150g)",k:60,p:1,c:15,f:0},{n:"Cafe sem acucar",w:"1 xicara",k:2,p:0,c:0,f:0}]},
+    {m:"Lanche da manha",t:"10:00",its:[{n:"Iogurte grego integral",w:"100g",k:97,p:9,c:4,f:5},{n:"Morango",w:"10 un (120g)",k:39,p:1,c:9,f:0},{n:"Chia",w:"1 col sopa (10g)",k:49,p:2,c:4,f:3}]},
+    {m:"Almoco",t:"13:00",its:[{n:"Frango grelhado",w:"1 file (120g)",k:163,p:31,c:0,f:4},{n:"Arroz integral cozido",w:"4 col sopa (120g)",k:139,p:3,c:29,f:1},{n:"Feijao carioca cozido",w:"1 concha (80g)",k:82,p:5,c:15,f:0},{n:"Alface com tomate e pepino",w:"1 prato (100g)",k:20,p:1,c:3,f:0},{n:"Brocolis no vapor",w:"80g",k:27,p:2,c:5,f:0}]},
+    {m:"Lanche da tarde",t:"16:00",its:[{n:"Cuscuz com ovo mexido",w:"1 porcao (130g)",k:200,p:9,c:33,f:4},{n:"Suco verde",w:"300ml",k:80,p:2,c:16,f:0}]},
+    {m:"Jantar",t:"19:00",its:[{n:"Omelete de 3 ovos",w:"150g",k:230,p:18,c:2,f:16},{n:"Batata doce assada",w:"100g",k:86,p:2,c:20,f:0},{n:"Salada de folhas verdes",w:"1 prato (100g)",k:20,p:1,c:3,f:0}]},
+    {m:"Ceia",t:"22:00",its:[{n:"Iogurte natural desnatado",w:"200g",k:110,p:8,c:15,f:2},{n:"Cha de camomila",w:"200ml",k:2,p:0,c:0,f:0}]}
+  ],
+  manter:[
+    {m:"Cafe da manha",t:"07:00",its:[{n:"Aveia em flocos",w:"3 col sopa (30g)",k:115,p:4,c:20,f:2},{n:"Iogurte grego integral",w:"100g",k:97,p:9,c:4,f:5},{n:"Banana prata",w:"1 un (90g)",k:83,p:1,c:21,f:0},{n:"Leite com cafe",w:"200ml",k:90,p:6,c:11,f:2}]},
+    {m:"Lanche da manha",t:"10:00",its:[{n:"Maca",w:"1 un (130g)",k:68,p:0,c:18,f:0},{n:"Mix de castanhas",w:"1 punhado (20g)",k:120,p:3,c:4,f:11}]},
+    {m:"Almoco",t:"13:00",its:[{n:"Carne bovina magra",w:"1 bife (100g)",k:176,p:26,c:0,f:7},{n:"Arroz branco cozido",w:"4 col sopa (120g)",k:156,p:3,c:34,f:0},{n:"Feijao preto cozido",w:"1 concha (80g)",k:83,p:5,c:15,f:0},{n:"Legumes no vapor",w:"100g",k:35,p:2,c:7,f:0},{n:"Mix de folhas verdes",w:"100g",k:18,p:1,c:3,f:0}]},
+    {m:"Lanche da tarde",t:"16:00",its:[{n:"Tapioca com queijo",w:"1 un (90g)",k:185,p:8,c:32,f:4},{n:"Suco verde",w:"300ml",k:80,p:2,c:16,f:0}]},
+    {m:"Jantar",t:"19:00",its:[{n:"Peixe assado",w:"1 file (120g)",k:140,p:27,c:0,f:3},{n:"Arroz integral",w:"3 col sopa (90g)",k:104,p:2,c:22,f:1},{n:"Salada de folhas verdes",w:"100g",k:20,p:1,c:3,f:0},{n:"Legumes no vapor",w:"80g",k:27,p:2,c:5,f:0}]},
+    {m:"Ceia",t:"22:00",its:[{n:"Kefir",w:"200ml",k:110,p:7,c:12,f:3},{n:"Morango",w:"8 un (100g)",k:33,p:1,c:8,f:0}]}
+  ],
+  ganhar:[
+    {m:"Cafe da manha",t:"07:00",its:[{n:"Aveia em flocos",w:"5 col sopa (50g)",k:190,p:7,c:33,f:4},{n:"Banana prata",w:"1 un (90g)",k:83,p:1,c:21,f:0},{n:"Pasta de amendoim",w:"1 col sopa (15g)",k:88,p:4,c:3,f:7},{n:"Leite com cafe",w:"200ml",k:90,p:6,c:11,f:2}]},
+    {m:"Lanche da manha",t:"10:00",its:[{n:"Barra de proteina",w:"1 un (45g)",k:180,p:20,c:16,f:4},{n:"Banana prata",w:"1 un (90g)",k:83,p:1,c:21,f:0},{n:"Agua de coco",w:"300ml",k:57,p:1,c:13,f:0}]},
+    {m:"Almoco",t:"13:00",its:[{n:"Frango grelhado",w:"1 file (120g)",k:163,p:31,c:0,f:4},{n:"Arroz branco cozido",w:"5 col sopa (150g)",k:195,p:4,c:43,f:1},{n:"Feijao carioca cozido",w:"1 concha (80g)",k:82,p:5,c:15,f:0},{n:"Batata doce cozida",w:"100g",k:86,p:2,c:20,f:0},{n:"Mix de folhas verdes",w:"100g",k:18,p:1,c:3,f:0}]},
+    {m:"Lanche da tarde",t:"16:00",its:[{n:"Vitamina de banana",w:"300ml",k:180,p:6,c:33,f:3},{n:"Wrap integral com frango",w:"1 un (120g)",k:220,p:18,c:28,f:4}]},
+    {m:"Jantar",t:"19:00",its:[{n:"Carne bovina magra",w:"1 bife (100g)",k:176,p:26,c:0,f:7},{n:"Macarrao integral cozido",w:"1 concha (120g)",k:148,p:5,c:29,f:1},{n:"Legumes no vapor",w:"100g",k:35,p:2,c:7,f:0},{n:"Mix de folhas verdes",w:"80g",k:18,p:1,c:3,f:0}]},
+    {m:"Ceia",t:"22:00",its:[{n:"Iogurte grego",w:"100g",k:97,p:9,c:4,f:5},{n:"Amendoas",w:"10 un (14g)",k:82,p:3,c:3,f:7},{n:"Mel",w:"1 col cha (7g)",k:21,p:0,c:6,f:0}]}
+  ]
+};
+
+function selObj(btn,v){ prefObj=v; btn.closest(".cr").querySelectorAll(".pb").forEach(function(b){b.classList.remove("on");}); btn.classList.add("on"); }
+function togRest(btn,v){ var i=prefRest.indexOf(v); if(i>-1){prefRest.splice(i,1);btn.classList.remove("on");}else{prefRest.push(v);btn.classList.add("on");} }
+
+function generatePlan() {
+  var plan = autoPlans[prefObj] || autoPlans.emagrecer;
+  lastPlan = {plan:plan, obj:prefObj, rest:prefRest.slice()};
+  var el = document.getElementById("gen-result");
+  var tk=0,tp=0,tc=0,tf=0;
+  plan.forEach(function(m){ m.its.forEach(function(i){ tk+=i.k;tp+=i.p;tc+=i.c;tf+=i.f; }); });
+  var html = '<div style="display:flex;gap:7px;margin-bottom:10px">'
+    + tcardHTML("Total do dia",tk,"kcal") + tcardHTML("Proteina",tp,"g")
+    + tcardHTML("Carboidrato",tc,"g") + tcardHTML("Gordura",tf,"g") + '</div>';
+  plan.forEach(function(m) {
+    var mk=m.its.reduce(function(a,i){return a+i.k;},0);
+    var mp=m.its.reduce(function(a,i){return a+i.p;},0);
+    var mc=m.its.reduce(function(a,i){return a+i.c;},0);
+    var mf=m.its.reduce(function(a,i){return a+i.f;},0);
+    html += '<div class="gm" style="margin-bottom:8px">'
+      + '<span class="gt">'+m.t+'</span>'
+      + '<div class="gi">'
+      + '<div class="gn">'+m.m+'</div>'
+      + '<div class="gd">'+m.its.map(function(i){return i.n+' ('+i.w+')';}).join(' &bull; ')+'</div>'
+      + '<div class="gkc">'+mk+' kcal &nbsp;&middot;&nbsp; Prot: '+mp+'g &nbsp;&middot;&nbsp; Carb: '+mc+'g &nbsp;&middot;&nbsp; Gord: '+mf+'g</div>'
+      + '</div></div>';
+  });
+  var restr = prefRest.length>0 ? ' &bull; '+prefRest.join(", ") : "";
+  html += '<div class="note">Objetivo: <strong>'+prefObj+'</strong>'+restr+'. Valores aproximados. Consulte um nutricionista.</div>';
+  el.innerHTML = html;
+  document.getElementById("auto-sv").style.display = "block";
+  var d = new Date();
+  document.getElementById("auto-name").value = "Cardapio "+prefObj+" - "+d.toLocaleDateString("pt-BR");
+}
+
+function tcardHTML(l,v,u){ return '<div class="tc"><div class="tc-lbl">'+l+'</div><div class="tc-val">'+v+'</div><div class="tc-un">'+u+'</div></div>'; }
+
+// ============================================================
+// PDF / IMPRESSAO
+// ============================================================
+function buildPrintDoc(planName, dateStr, tk, tp, tc, tf, mealsHTML) {
+  return '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Prato Certo - '+planName+'</title>'
+    + '<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Segoe UI,Arial,sans-serif;background:#f0ece4;padding:20px;color:#2d3a2e}.pg{max-width:720px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden}@media print{body{background:white;padding:0}.pg{border-radius:0}}</style>'
+    + '</head><body><div class="pg">'
+    + '<div style="background:#4a7c59;padding:16px 22px;display:flex;align-items:center;gap:13px">'
+    + '<div style="width:44px;height:44px;border-radius:50%;background:#fdf6e3;display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+    + '<svg width="24" height="24" viewBox="0 0 28 28" fill="none"><path d="M14 3C14 3 4 8 4 17C4 22 8.5 25 14 25C19.5 25 24 22 24 17C24 8 14 3 14 3Z" fill="#4a7c59"/><path d="M14 4 Q14 14 14 24" stroke="#d4a017" stroke-width="1.5" stroke-linecap="round"/></svg>'
+    + '</div>'
+    + '<div><div style="font-size:19px;font-weight:700;color:#fff">Prato Certo</div><div style="font-size:11px;color:rgba(255,255,255,.78)">'+planName+'</div></div>'
+    + '<div style="margin-left:auto;text-align:right"><div style="font-size:10px;color:rgba(255,255,255,.7)">'+dateStr+'</div></div>'
+    + '</div>'
+    + '<div style="display:flex;border-bottom:1px solid #e8f5ee">'
+    + [["Calorias",tk,"kcal"],["Proteina",tp,"g"],["Carboidrato",tc,"g"],["Gordura",tf,"g"]].map(function(x){
+        return '<div style="flex:1;padding:13px 8px;text-align:center;border-right:1px solid #e8f5ee"><div style="font-size:10px;color:#5a6b5c;margin-bottom:3px">'+x[0]+'</div><div style="font-size:19px;font-weight:700;color:#4a7c59">'+x[1]+'</div><div style="font-size:10px;color:#5a6b5c;margin-top:2px">'+x[2]+'</div></div>';
+      }).join("")
+    + '</div>'
+    + '<div style="padding:18px 20px 14px">'+mealsHTML+'</div>'
+    + '<div style="padding:11px 20px;background:#fdf6e3;border-top:1px solid #e8d08a;font-size:11px;color:#7a5a00;line-height:1.6">Valores nutricionais sao aproximados. Consulte sempre um nutricionista para acompanhamento personalizado.</div>'
+    + '</div><script>window.onload=function(){window.print();}<\/script></body></html>';
+}
+
+function mealBlockHTML(time, mealName, items) {
+  var mkcal = items.reduce(function(a,i){return a+(i.k||0);},0);
+  var rows = items.map(function(it){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:.5px solid #e8f5ee">'
+      + '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:#2d3a2e">'+(it.name||it.n)+'</div>'
+      + '<div style="font-size:11px;color:#5a6b5c;margin-top:2px">'+(it.w||'')
+      + ' &nbsp;&middot;&nbsp; Prot: '+it.p+'g &nbsp;&middot;&nbsp; Carb: '+it.c+'g &nbsp;&middot;&nbsp; Gord: '+it.f+'g</div></div>'
+      + '<div style="font-size:13px;font-weight:700;color:#d4a017;flex-shrink:0">'+it.k+' kcal</div>'
+      + '</div>';
+  }).join("");
+  return '<div style="margin-bottom:15px;border:1px solid #c8ddc8;border-radius:9px;overflow:hidden;page-break-inside:avoid">'
+    + '<div style="background:#4a7c59;padding:9px 13px;display:flex;align-items:center;gap:9px">'
+    + '<span style="background:#e8f5ee;color:#4a7c59;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px">'+time+'</span>'
+    + '<span style="font-size:14px;font-weight:700;color:#fff">'+mealName+'</span>'
+    + '<span style="margin-left:auto;background:#fdf6e3;color:#d4a017;font-size:11px;font-weight:700;padding:3px 9px;border-radius:11px">'+mkcal+' kcal</span>'
+    + '</div>'
+    + '<div style="padding:11px 13px 5px;background:#fff">'+rows+'</div>'
+    + '</div>';
+}
+
+function printPDF() {
+  var name = document.getElementById("plan-name").value.trim() || "Meu Cardapio";
+  if(Object.keys(sel).length===0){alert("Selecione pelo menos um alimento antes de gerar o PDF.");return;}
+  var d=new Date(); var ds=d.toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  var tk=0,tp=0,tc=0,tf=0; Object.values(sel).forEach(function(v){tk+=v.k;tp+=v.p;tc+=v.c;tf+=v.f;});
+  var mh="";
+  meals.forEach(function(meal,mi){
+    var items=Object.keys(sel).filter(function(k){return k.startsWith(mi+"_");}).map(function(k){return sel[k];});
+    if(items.length>0) mh+=mealBlockHTML(meal.time, meal.name, items);
+  });
+  var w=window.open("","_blank"); w.document.write(buildPrintDoc(name,ds,tk,tp,tc,tf,mh)); w.document.close();
+}
+
+function printAutoPDF() {
+  if(!lastPlan){alert("Gere um cardapio primeiro.");return;}
+  var name=document.getElementById("auto-name").value.trim()||"Cardapio Gerado";
+  var d=new Date(); var ds=d.toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  var tk=0,tp=0,tc=0,tf=0; lastPlan.plan.forEach(function(m){m.its.forEach(function(i){tk+=i.k;tp+=i.p;tc+=i.c;tf+=i.f;});});
+  var mh=""; lastPlan.plan.forEach(function(m){ mh+=mealBlockHTML(m.t, m.m, m.its.map(function(i){return {name:i.n,w:i.w,k:i.k,p:i.p,c:i.c,f:i.f};})); });
+  var w=window.open("","_blank"); w.document.write(buildPrintDoc(name,ds,tk,tp,tc,tf,mh)); w.document.close();
+}
+
+// ============================================================
+// HISTORICO
+// ============================================================
+function getHist(){try{return JSON.parse(localStorage.getItem("pc_hist")||"[]");}catch{return[];}}
+function putHist(h){localStorage.setItem("pc_hist",JSON.stringify(h));}
+
+function saveToHist() {
+  var name=document.getElementById("plan-name").value.trim()||"Meu Cardapio";
+  if(Object.keys(sel).length===0){alert("Selecione pelo menos um alimento antes de salvar.");return;}
+  var tk=0,tp=0,tc=0,tf=0; Object.values(sel).forEach(function(v){tk+=v.k;tp+=v.p;tc+=v.c;tf+=v.f;});
+  var ml=meals.map(function(meal,mi){
+    var items=Object.keys(sel).filter(function(k){return k.startsWith(mi+"_");}).map(function(k){return sel[k];});
+    return{name:meal.name,time:meal.time,items:items};
+  }).filter(function(m){return m.items.length>0;});
+  var e={id:Date.now(),name:name,date:new Date().toISOString(),tot:{k:tk,p:tp,c:tc,f:tf},meals:ml,type:"manual"};
+  var h=getHist(); h.unshift(e); putHist(h.slice(0,30));
+  alert("Cardapio salvo no historico!");
+}
+
+function saveAutoToHist() {
+  if(!lastPlan){alert("Gere um cardapio primeiro.");return;}
+  var name=document.getElementById("auto-name").value.trim()||"Cardapio Gerado";
+  var tk=0,tp=0,tc=0,tf=0; lastPlan.plan.forEach(function(m){m.its.forEach(function(i){tk+=i.k;tp+=i.p;tc+=i.c;tf+=i.f;});});
+  var ml=lastPlan.plan.map(function(m){return{name:m.m,time:m.t,items:m.its.map(function(i){return{name:i.n,w:i.w,k:i.k,p:i.p,c:i.c,f:i.f};})};});
+  var e={id:Date.now(),name:name,date:new Date().toISOString(),tot:{k:tk,p:tp,c:tc,f:tf},meals:ml,obj:lastPlan.obj,type:"auto"};
+  var h=getHist(); h.unshift(e); putHist(h.slice(0,30));
+  alert("Cardapio salvo no historico!");
+}
+
+function renderHist() {
+  var wrap=document.getElementById("hist-wrap"); var h=getHist();
+  if(h.length===0){wrap.innerHTML='<div class="hemp">Nenhum cardapio salvo ainda. Monte ou gere um cardapio e salve no historico.</div>';return;}
+  wrap.innerHTML=h.map(function(e){
+    var d=new Date(e.date);
+    var ds=d.toLocaleDateString("pt-BR",{weekday:"short",day:"2-digit",month:"short",year:"numeric"});
+    var ts=d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    var ms=e.meals.map(function(m){return '<span style="font-weight:700;color:#4a7c59">'+m.time+' '+m.name+':</span> '+m.items.map(function(i){return i.name;}).join(", ");}).join("<br>");
+    return '<div class="hc">'
+      +'<div class="hcn">'+e.name+'</div>'
+      +'<div class="hcd">'+ds+' as '+ts+(e.obj?' &bull; '+e.obj:'')+'</div>'
+      +'<div class="hct">'
+      +'<span class="hcp">'+e.tot.k+' kcal</span>'
+      +'<span class="hcp">Prot: '+e.tot.p+'g</span>'
+      +'<span class="hcp">Carb: '+e.tot.c+'g</span>'
+      +'<span class="hcp">Gord: '+e.tot.f+'g</span>'
+      +'</div>'
+      +'<div class="hcm">'+ms+'</div>'
+      +'<div class="hca">'
+      +'<button class="bhp" onclick="printHistEntry('+e.id+')">Imprimir PDF</button>'
+      +'<button class="bhd" onclick="delHistEntry('+e.id+')">Excluir</button>'
+      +'</div></div>';
+  }).join("");
+}
+
+function printHistEntry(id) {
+  var h=getHist(); var e=h.find(function(x){return x.id===id;}); if(!e)return;
+  var d=new Date(e.date); var ds=d.toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+  var mh=""; e.meals.forEach(function(m){ mh+=mealBlockHTML(m.time,m.name,m.items); });
+  var w=window.open("","_blank"); w.document.write(buildPrintDoc(e.name,ds,e.tot.k,e.tot.p,e.tot.c,e.tot.f,mh)); w.document.close();
+}
+
+function delHistEntry(id) {
+  if(!confirm("Excluir este cardapio do historico?"))return;
+  putHist(getHist().filter(function(e){return e.id!==id;})); renderHist();
+}
+
+// ============================================================
+// RECEITAS
+// ============================================================
+var defaultRecs = [
+  {id:1,nome:"Omelete de claras com espinafre",cat:"fit",ref:"Jantar",tempo:"10 min",porcoes:"1 porcao",kcal:180,prot:22,
+   ings:[{qty:"3 unidades",item:"Claras de ovo"},{qty:"1 punhado (30g)",item:"Espinafre fresco"},{qty:"1 col sopa",item:"Azeite de oliva"},{qty:"A gosto",item:"Sal e temperos"}],
+   modo:"1. Bata as claras levemente com sal e temperos a gosto.\n2. Refogue o espinafre rapidamente no azeite quente.\n3. Despeje as claras sobre o espinafre na frigideira.\n4. Cozinhe em fogo medio com a frigideira tampada por 3-4 minutos.\n5. Dobre ao meio e sirva quente."},
+  {id:2,nome:"Bowl de iogurte grego com frutas e chia",cat:"glp",ref:"Cafe da manha",tempo:"5 min",porcoes:"1 porcao",kcal:210,prot:14,
+   ings:[{qty:"150g",item:"Iogurte grego integral"},{qty:"1 col sopa (10g)",item:"Sementes de chia"},{qty:"1 col cha (7g)",item:"Mel"},{qty:"80g",item:"Morango fatiado"},{qty:"meia un (45g)",item:"Banana em rodelas"}],
+   modo:"1. Coloque o iogurte em uma tigela.\n2. Adicione a chia e misture bem.\n3. Disponha as frutas por cima.\n4. Regue com mel e sirva imediatamente.\nDica GLP-1: A chia ajuda na saciedade e a proteina do iogurte retarda o esvaziamento gastrico."},
+  {id:3,nome:"Frango desfiado com batata doce",cat:"dia",ref:"Almoco",tempo:"30 min",porcoes:"2 porcoes",kcal:340,prot:34,
+   ings:[{qty:"200g",item:"Peito de frango"},{qty:"2 un medias (200g)",item:"Batata doce"},{qty:"1 dente",item:"Alho picado"},{qty:"1 col sopa",item:"Azeite de oliva"},{qty:"A gosto",item:"Sal, pimenta e ervas"}],
+   modo:"1. Cozinhe o frango em agua com sal por 20 minutos.\n2. Desfie com dois garfos e refogue no azeite com alho.\n3. Cozinhe a batata doce no vapor ou microondas ate amolecer.\n4. Sirva o frango sobre a batata doce com ervas frescas."},
+  {id:4,nome:"Cuscuz nordestino fit com ovo",cat:"dia",ref:"Lanche da tarde",tempo:"15 min",porcoes:"1 porcao",kcal:260,prot:14,
+   ings:[{qty:"100g seco",item:"Cuscuz (flocos de milho)"},{qty:"150ml",item:"Agua quente"},{qty:"2 unidades",item:"Ovos mexidos"},{qty:"meia col cha",item:"Sal"},{qty:"A gosto",item:"Manteiga ou azeite (opcional)"}],
+   modo:"1. Misture o cuscuz com o sal e umedeca com a agua quente aos poucos.\n2. Mexa com um garfo ate ficar soltinho e hidratado.\n3. Prepare os ovos mexidos em frigideira antiaderente.\n4. Sirva o cuscuz acompanhado dos ovos.\nVariacoes: pode adicionar queijo cottage, atum ou sardinha."},
+  {id:5,nome:"Sopa cremosa de legumes",cat:"glp",ref:"Jantar",tempo:"25 min",porcoes:"3 porcoes",kcal:140,prot:8,
+   ings:[{qty:"200g",item:"Abobrinha picada"},{qty:"1 media (80g)",item:"Cenoura picada"},{qty:"100g",item:"Brocolis"},{qty:"meia un (60g)",item:"Cebola"},{qty:"2 dentes",item:"Alho"},{qty:"600ml",item:"Caldo de legumes light"},{qty:"A gosto",item:"Sal, pimenta e tomilho"}],
+   modo:"1. Refogue cebola e alho no azeite ate dourar.\n2. Adicione os legumes e o caldo de legumes.\n3. Cozinhe por 15 minutos em fogo medio.\n4. Bata metade da sopa no liquidificador e retorne a panela.\n5. Ajuste o sal e sirva quente.\nDica GLP-1: Sopas sao ideais pois sao de facil digestao e ajudam a hidratar."}
+];
+
+function getRecs(){try{var s=localStorage.getItem("pc_recs");return s?JSON.parse(s):JSON.parse(JSON.stringify(defaultRecs));}catch{return JSON.parse(JSON.stringify(defaultRecs));}}
+function putRecs(r){localStorage.setItem("pc_recs",JSON.stringify(r));}
+function catLbl(c){return c==="fit"?"Fit":c==="glp"?"GLP-1":"Dia a dia";}
+function catCls(c){return c==="fit"?"bfit":c==="glp"?"bglp":"bdia";}
+
+function filtrarRec(f,btn){
+  recFiltro=f;
+  document.querySelectorAll(".rf").forEach(function(b){b.classList.toggle("on",b===btn);});
+  renderReceitas();
+}
+
+function renderReceitas(){
+  var grid=document.getElementById("rec-grid");
+  var recs=getRecs();
+  if(recFiltro!=="todos") recs=recs.filter(function(r){return r.cat===recFiltro;});
+  if(recs.length===0){grid.innerHTML='<div class="remp">Nenhuma receita encontrada para este filtro.</div>';return;}
+  grid.innerHTML=recs.map(function(r){
+    return '<div class="rcard">'
+      +'<div class="rchdl" onclick="togRec(\'rb'+r.id+'\')">'
+      +'<span class="rctit">'+r.nome+'</span>'
+      +'<div class="rcbdg">'
+      +'<span class="bdg '+catCls(r.cat)+'">'+catLbl(r.cat)+'</span>'
+      +'<span class="bdg bkc">'+r.kcal+' kcal</span>'
+      +'</div>'
+      +'<span style="font-size:10px;color:var(--ts);margin-left:4px">v</span>'
+      +'</div>'
+      +'<div class="rcbdy" id="rb'+r.id+'">'
+      +'<div class="rcmeta">'
+      +'<span class="rcmp">'+r.ref+'</span>'
+      +'<span class="rcmp">'+r.tempo+'</span>'
+      +'<span class="rcmp">'+r.porcoes+'</span>'
+      +'<span class="rcmp">Proteina: '+r.prot+'g/porcao</span>'
+      +'</div>'
+      +'<div class="rcst">Ingredientes</div>'
+      +'<ul class="rcil">'+r.ings.map(function(ig){return '<li><span class="rciq">'+ig.qty+'</span><span>'+ig.item+'</span></li>';}).join("")+'</ul>'
+      +'<div class="rcst">Modo de preparo</div>'
+      +'<div class="rcmd">'+r.modo+'</div>'
+      +'</div>'
+      +'</div>';
+  }).join("");
+}
+
+function togRec(id){var el=document.getElementById(id);if(el)el.classList.toggle("open");}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function checkPass(){
+  var v=document.getElementById("admin-pass").value;
+  if(v===ADMIN_PASS){
+    adminLogado=true;
+    document.getElementById("admin-lock").style.display="none";
+    document.getElementById("admin-area").style.display="block";
+    if(document.getElementById("ing-list").children.length===0) addIng("","");
+    renderAdminList();
+  } else {
+    document.getElementById("pass-err").style.display="block";
+    document.getElementById("admin-pass").value="";
+  }
+}
+
+function sairAdmin(){
+  adminLogado=false;
+  document.getElementById("admin-lock").style.display="block";
+  document.getElementById("admin-area").style.display="none";
+  document.getElementById("admin-pass").value="";
+  document.getElementById("pass-err").style.display="none";
+}
+
+function addIng(qty,item){
+  var list=document.getElementById("ing-list");
+  var row=document.createElement("div"); row.className="ingrow";
+  row.innerHTML='<input type="text" placeholder="Quantidade (ex: 100g)" value="'+qty+'" style="max-width:160px"/>'
+    +'<input type="text" placeholder="Ingrediente" value="'+item+'"/>'
+    +'<button class="bdeling" onclick="this.parentElement.remove()">x</button>';
+  list.appendChild(row);
+}
+
+function getIngRows(){
+  return Array.from(document.querySelectorAll("#ing-list .ingrow")).map(function(row){
+    var ins=row.querySelectorAll("input");
+    return{qty:ins[0].value.trim(),item:ins[1].value.trim()};
+  }).filter(function(ig){return ig.item;});
+}
+
+function salvarRec(){
+  var nome=document.getElementById("r-nome").value.trim();
+  if(!nome){alert("Digite o nome da receita.");return;}
+  var ings=getIngRows();
+  if(ings.length===0){alert("Adicione pelo menos 1 ingrediente.");return;}
+  var modo=document.getElementById("r-modo").value.trim();
+  if(!modo){alert("Preencha o modo de preparo.");return;}
+  var eid=document.getElementById("r-eid").value;
+  var id=eid?parseInt(eid):Date.now();
+  var rec={
+    id:id, nome:nome,
+    cat:document.getElementById("r-cat").value,
+    ref:document.getElementById("r-ref").value,
+    tempo:document.getElementById("r-tempo").value.trim()||"N/A",
+    porcoes:document.getElementById("r-porcoes").value.trim()||"1 porcao",
+    kcal:parseInt(document.getElementById("r-kcal").value)||0,
+    prot:parseInt(document.getElementById("r-prot").value)||0,
+    ings:ings, modo:modo
+  };
+  var recs=getRecs();
+  if(eid){ recs=recs.map(function(r){return r.id===id?rec:r;}); }
+  else{ recs.push(rec); }
+  putRecs(recs);
+  limparForm();
+  renderAdminList();
+  alert("Receita salva com sucesso!");
+}
+
+function limparForm(){
+  ["r-nome","r-tempo","r-porcoes","r-kcal","r-prot","r-modo"].forEach(function(id){document.getElementById(id).value="";});
+  document.getElementById("r-cat").value="fit";
+  document.getElementById("r-ref").value="Cafe da manha";
+  document.getElementById("ing-list").innerHTML="";
+  document.getElementById("r-eid").value="";
+  document.getElementById("form-tit").textContent="Nova Receita";
+  document.getElementById("btn-cn").style.display="none";
+  editId=null;
+  addIng("","");
+}
+
+function cancelarEdit(){limparForm();}
+
+function editarRec(id){
+  var recs=getRecs(); var r=recs.find(function(x){return x.id===id;}); if(!r)return;
+  editId=id;
+  document.getElementById("r-eid").value=id;
+  document.getElementById("r-nome").value=r.nome;
+  document.getElementById("r-cat").value=r.cat;
+  document.getElementById("r-ref").value=r.ref;
+  document.getElementById("r-tempo").value=r.tempo;
+  document.getElementById("r-porcoes").value=r.porcoes;
+  document.getElementById("r-kcal").value=r.kcal;
+  document.getElementById("r-prot").value=r.prot;
+  document.getElementById("r-modo").value=r.modo;
+  document.getElementById("ing-list").innerHTML="";
+  r.ings.forEach(function(ig){addIng(ig.qty,ig.item);});
+  document.getElementById("form-tit").textContent="Editando: "+r.nome;
+  document.getElementById("btn-cn").style.display="block";
+  document.getElementById("form-rec").scrollIntoView({behavior:"smooth"});
+}
+
+function excluirRec(id){
+  var recs=getRecs(); var r=recs.find(function(x){return x.id===id;});
+  if(!r||!confirm("Excluir a receita "+r.nome+"?"))return;
+  putRecs(recs.filter(function(x){return x.id!==id;}));
+  renderAdminList();
+}
+
+function renderAdminList(){
+  if(!adminLogado)return;
+  var list=document.getElementById("admin-list");
+  var recs=getRecs();
+  if(recs.length===0){list.innerHTML='<div style="font-size:13px;color:var(--ts);text-align:center;padding:1rem">Nenhuma receita cadastrada ainda.</div>';return;}
+  list.innerHTML=recs.map(function(r){
+    return '<div class="arw">'
+      +'<div style="flex:1"><div class="arn">'+r.nome+'</div><div class="arc">'+catLbl(r.cat)+' &bull; '+r.ref+' &bull; '+r.kcal+' kcal</div></div>'
+      +'<button class="bedit" onclick="editarRec('+r.id+')">Editar</button>'
+      +'<button class="bdelr" onclick="excluirRec('+r.id+')">Excluir</button>'
+      +'</div>';
+  }).join("");
+}
+
+
+// ============================================================
+// CAMERA + IA
+// ============================================================
+var camStream = null;
+var fotoTirada = false;
+
+function initCamera() {
+  // just make sure state is right when tab opens
+}
+
+function abrirCamera() {
+  var constraints = { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false };
+  navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+    camStream = stream;
+    var video = document.getElementById("cam-video");
+    video.srcObject = stream;
+    video.classList.add("active");
+    document.getElementById("cam-ph").style.display = "none";
+    document.getElementById("btn-open-cam").style.display = "none";
+    document.getElementById("btn-foto").style.display = "flex";
+    document.getElementById("btn-fechar").style.display = "flex";
+    document.getElementById("cam-result").classList.remove("visible");
+    document.getElementById("cam-err").classList.remove("visible");
+  }).catch(function(err) {
+    mostrarErro("Nao foi possivel acessar a camera. Verifique as permissoes do navegador. Erro: " + err.message);
+  });
+}
+
+function tirarFoto() {
+  var video = document.getElementById("cam-video");
+  var canvas = document.getElementById("cam-canvas");
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  video.classList.remove("active");
+  canvas.classList.add("active");
+  document.getElementById("btn-foto").style.display = "none";
+  document.getElementById("btn-nova").style.display = "flex";
+  fotoTirada = true;
+  analisarFoto(canvas);
+}
+
+function novaFoto() {
+  var video = document.getElementById("cam-video");
+  var canvas = document.getElementById("cam-canvas");
+  canvas.classList.remove("active");
+  video.classList.add("active");
+  document.getElementById("btn-nova").style.display = "none";
+  document.getElementById("btn-foto").style.display = "flex";
+  document.getElementById("cam-result").classList.remove("visible");
+  document.getElementById("cam-err").classList.remove("visible");
+  document.getElementById("cam-loading").style.display = "none";
+  fotoTirada = false;
+}
+
+function fecharCamera() {
+  if(camStream) { camStream.getTracks().forEach(function(t){ t.stop(); }); camStream = null; }
+  var video = document.getElementById("cam-video");
+  var canvas = document.getElementById("cam-canvas");
+  video.srcObject = null;
+  video.classList.remove("active");
+  canvas.classList.remove("active");
+  document.getElementById("cam-ph").style.display = "block";
+  document.getElementById("btn-open-cam").style.display = "flex";
+  document.getElementById("btn-foto").style.display = "none";
+  document.getElementById("btn-nova").style.display = "none";
+  document.getElementById("btn-fechar").style.display = "none";
+  document.getElementById("cam-result").classList.remove("visible");
+  document.getElementById("cam-err").classList.remove("visible");
+  document.getElementById("cam-loading").style.display = "none";
+  fotoTirada = false;
+}
+
+function analisarFoto(canvas) {
+  document.getElementById("cam-loading").style.display = "block";
+  document.getElementById("cam-result").classList.remove("visible");
+  document.getElementById("cam-err").classList.remove("visible");
+  var base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
+  var prompt = "Voce e um nutricionista especialista em analise visual de alimentos. Analise esta imagem de uma refeicao e responda APENAS com um JSON valido, sem markdown, sem texto extra. O JSON deve ter exatamente este formato:\n{\n  \"alimentos\": [{\"nome\": string, \"porcao\": string, \"kcal\": number}],\n  \"total_kcal\": number,\n  \"proteinas_g\": number,\n  \"carboidratos_g\": number,\n  \"gorduras_g\": number,\n  \"observacao\": string\n}\nSeja realista nas estimativas. Se nao conseguir identificar a refeicao, retorne os campos zerados e explique na observacao.";
+  fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: "image/jpeg", data: base64 } },
+          { type: "text", text: prompt }
+        ]
+      }]
+    })
+  }).then(function(r){ return r.json(); }).then(function(data) {
+    document.getElementById("cam-loading").style.display = "none";
+    var text = "";
+    if(data.content && data.content.length > 0) {
+      data.content.forEach(function(block){ if(block.type === "text") text += block.text; });
+    }
+    try {
+      var clean = text.replace(/```json|```/g,"").trim();
+      var res = JSON.parse(clean);
+      mostrarResultado(res);
+    } catch(e) {
+      mostrarErro("Nao foi possivel interpretar a resposta da IA. Tente novamente com uma foto mais clara e bem iluminada.");
+    }
+  }).catch(function(err) {
+    document.getElementById("cam-loading").style.display = "none";
+    mostrarErro("Erro ao conectar com a IA: " + err.message + ". Verifique sua conexao com a internet.");
+  });
+}
+
+function mostrarResultado(res) {
+  var macros = document.getElementById("cam-macros");
+  macros.innerHTML = [
+    ["Calorias", res.total_kcal || 0, "kcal"],
+    ["Proteinas", res.proteinas_g || 0, "g"],
+    ["Carboidratos", res.carboidratos_g || 0, "g"],
+    ["Gorduras", res.gorduras_g || 0, "g"]
+  ].map(function(m){
+    return '<div class="cam-macro"><div class="cam-macro-val">'+m[1]+'</div><div class="cam-macro-lbl">'+m[0]+' ('+m[2]+')</div></div>';
+  }).join("");
+  var foods = document.getElementById("cam-foods");
+  if(res.alimentos && res.alimentos.length > 0) {
+    foods.innerHTML = res.alimentos.map(function(a){
+      return '<div class="cam-food-item">'
+        +'<span class="cam-food-name">'+a.nome+' <span style="font-size:11px;color:var(--ts)">('+a.porcao+')</span></span>'
+        +'<span class="cam-food-kcal">'+a.kcal+' kcal</span>'
+        +'</div>';
+    }).join("");
+  } else {
+    foods.innerHTML = '<div style="font-size:12px;color:var(--ts);padding:4px 0">Nenhum alimento identificado individualmente.</div>';
+  }
+  document.getElementById("cam-obs").textContent = res.observacao || "Analise concluida. Valores sao estimativas baseadas na imagem.";
+  document.getElementById("cam-result").classList.add("visible");
+}
+
+function mostrarErro(msg) {
+  var el = document.getElementById("cam-err");
+  el.textContent = msg;
+  el.classList.add("visible");
+}
+
+// ============================================================
+// INICIAR
+// ============================================================
+buildManual();
+</script>
+</body>
+</html>
