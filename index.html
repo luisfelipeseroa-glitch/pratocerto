@@ -169,6 +169,34 @@ textarea.finp{resize:vertical;min-height:85px}
 .note{margin-top:1rem;padding:9px 13px;background:var(--ac);border-radius:9px;border-left:3px solid var(--am);font-size:11px;color:#7a5a00;line-height:1.6}
 .perr{font-size:11px;color:#c00;margin-top:7px;display:none}
 
+
+
+/* GROQ CONFIG */
+.groq-box{background:var(--br);border:.5px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh);margin-bottom:10px}
+.groq-box h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:6px}
+.groq-box p{font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.6}
+.groq-generating{text-align:center;padding:1.5rem;display:none}
+.groq-generating .spin{font-size:28px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:8px}
+.groq-generating p{font-size:13px;color:var(--ts)}
+
+/* API KEY CONFIG */
+.apikey-box{background:var(--br);border:.5px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh)}
+.apikey-box h3{font-size:14px;font-weight:700;color:var(--tx);margin-bottom:6px}
+.apikey-box p{font-size:12px;color:var(--ts);margin-bottom:10px;line-height:1.6}
+.apikey-row{display:flex;gap:7px;align-items:center}
+.apikey-inp{flex:1;padding:9px 11px;border:1px solid var(--bd);border-radius:9px;font-size:13px;color:var(--tx);background:var(--pa);outline:none;font-family:inherit;letter-spacing:1px}
+.apikey-inp:focus{border-color:var(--vd);background:#fff}
+.apikey-ok{width:14px;height:14px;border-radius:50%;background:#ccc;flex-shrink:0;transition:background .2s}
+.apikey-ok.ok{background:#4a7c59}
+.apikey-ok.err{background:#dc3545}
+.bsave-key{padding:9px 14px;font-size:13px;font-weight:700;background:var(--vd);color:#fff;border:none;border-radius:9px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.bsave-key:hover{opacity:.88}
+.apikey-status{font-size:11px;margin-top:6px;padding:5px 9px;border-radius:7px;display:none}
+.apikey-status.ok{display:block;background:#e8f5ee;color:#2d6a3f}
+.apikey-status.err{display:block;background:#fff0f0;color:#c00}
+.apikey-link{font-size:11px;color:var(--vd);text-decoration:none;display:inline-block;margin-top:5px}
+.apikey-link:hover{text-decoration:underline}
+
 /* CAMERA */
 .cam-wrap{display:flex;flex-direction:column;gap:12px}
 .cam-box{background:var(--br);border:.5px solid var(--bd);border-radius:14px;overflow:hidden;box-shadow:var(--sh)}
@@ -261,6 +289,17 @@ textarea.finp{resize:vertical;min-height:85px}
 <!-- AUTO -->
 <div class="panel" id="panel-auto">
   <div class="awt">
+    <div class="groq-box" id="groq-config-box">
+      <h3>&#9889; Configurar Groq API Key</h3>
+      <p>O Groq gera cardapios personalizados com IA de verdade, de forma rapida e gratuita. Crie sua conta em groq.com e gere uma chave gratis.</p>
+      <div class="apikey-row">
+        <input class="apikey-inp" type="password" id="groq-key-inp" placeholder="gsk_..." oninput="validarGroqKey()"/>
+        <div class="apikey-ok" id="groq-key-dot"></div>
+        <button class="bsave-key" onclick="salvarGroqKey()">Salvar</button>
+      </div>
+      <div class="apikey-status" id="groq-key-status"></div>
+      <a class="apikey-link" href="https://console.groq.com" target="_blank">&#8599; Criar conta gratuita no Groq</a>
+    </div>
     <div class="aco">
       <h3>Suas preferencias</h3>
       <div class="cr">
@@ -276,7 +315,25 @@ textarea.finp{resize:vertical;min-height:85px}
         <button class="pb" onclick="togRest(this,'vegetariano')">Vegetariano</button>
         <button class="pb" onclick="togRest(this,'low carb')">Low carb</button>
       </div>
-      <button class="gbtn" onclick="generatePlan()">Gerar meu cardapio do dia</button>
+      <div class="cr">
+        <span class="cl">Refeicoes:</span>
+        <button class="pb on" onclick="selRef(this,6)">6 refeicoes</button>
+        <button class="pb" onclick="selRef(this,5)">5 refeicoes</button>
+        <button class="pb" onclick="selRef(this,3)">3 refeicoes</button>
+      </div>
+      <div class="cr">
+        <span class="cl">Meta kcal:</span>
+        <button class="pb on" onclick="selKcal(this,0)">Automatico</button>
+        <button class="pb" onclick="selKcal(this,1200)">1200 kcal</button>
+        <button class="pb" onclick="selKcal(this,1500)">1500 kcal</button>
+        <button class="pb" onclick="selKcal(this,1800)">1800 kcal</button>
+        <button class="pb" onclick="selKcal(this,2200)">2200 kcal</button>
+      </div>
+      <button class="gbtn" id="btn-gerar" onclick="generatePlanGroq()">&#9889; Gerar com IA (Groq)</button>
+    </div>
+    <div class="groq-generating" id="groq-loading">
+      <div class="spin">&#9889;</div>
+      <p>A IA esta montando seu cardapio personalizado...</p>
     </div>
     <div id="gen-result"></div>
     <div id="auto-sv" style="display:none">
@@ -396,7 +453,18 @@ textarea.finp{resize:vertical;min-height:85px}
 <!-- CAMERA / FOTO IA -->
 <div class="panel" id="panel-camera">
   <div class="cam-wrap">
-    <div class="cam-tip">
+    <div class="apikey-box" id="apikey-box">
+      <h3>&#128273; Configurar API Key</h3>
+      <p>Para analisar fotos com IA, voce precisa de uma chave da Anthropic. E gratuito criar uma conta e cada analise custa em media U$0,003 (menos de 2 centavos).</p>
+      <div class="apikey-row">
+        <input class="apikey-inp" type="password" id="apikey-inp" placeholder="sk-ant-..." onchange="validarKey()" oninput="validarKey()"/>
+        <div class="apikey-ok" id="apikey-dot"></div>
+        <button class="bsave-key" onclick="salvarKey()">Salvar</button>
+      </div>
+      <div class="apikey-status" id="apikey-status"></div>
+      <a class="apikey-link" href="https://console.anthropic.com" target="_blank">&#8599; Criar conta e obter API Key gratuita</a>
+    </div>
+    <div class="cam-tip" id="cam-tip" style="display:none">
       Aponte a camera para sua refeicao e deixe a IA estimar as calorias e nutrientes automaticamente.
     </div>
     <div class="cam-box">
@@ -669,6 +737,7 @@ function goTab(t) {
   tabs.forEach(function(b,i){ b.classList.toggle("active", names[i]===t); });
   names.forEach(function(n){ var el=document.getElementById("panel-"+n); if(el) el.classList.toggle("active", n===t); });
   if(t==="historico") renderHist();
+  if(t==="auto") carregarGroqKey();
   if(t==="receitas") renderReceitas();
   if(t==="admin") renderAdminList();
   if(t==="camera") initCamera();
@@ -903,8 +972,17 @@ function printAutoPDF() {
   if(!lastPlan){alert("Gere um cardapio primeiro.");return;}
   var name=document.getElementById("auto-name").value.trim()||"Cardapio Gerado";
   var d=new Date(); var ds=d.toLocaleDateString("pt-BR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
-  var tk=0,tp=0,tc=0,tf=0; lastPlan.plan.forEach(function(m){m.its.forEach(function(i){tk+=i.k;tp+=i.p;tc+=i.c;tf+=i.f;});});
-  var mh=""; lastPlan.plan.forEach(function(m){ mh+=mealBlockHTML(m.t, m.m, m.its.map(function(i){return {name:i.n,w:i.w,k:i.k,p:i.p,c:i.c,f:i.f};})); });
+  var tk=0,tp=0,tc=0,tf=0; var mh="";
+  if(lastPlan.fromGroq && lastPlan.raw) {
+    tk=lastPlan.raw.total_dia_kcal||0; tp=lastPlan.raw.total_dia_prot||0;
+    tc=lastPlan.raw.total_dia_carb||0; tf=lastPlan.raw.total_dia_gord||0;
+    lastPlan.raw.refeicoes.forEach(function(r){
+      mh+=mealBlockHTML(r.horario, r.nome, r.alimentos.map(function(a){return {name:a.nome,w:a.porcao,k:a.kcal,p:a.proteina_g||0,c:a.carb_g||0,f:a.gordura_g||0};}));
+    });
+  } else {
+    lastPlan.plan.forEach(function(m){m.its.forEach(function(i){tk+=i.k;tp+=i.p;tc+=i.c;tf+=i.f;});});
+    lastPlan.plan.forEach(function(m){ mh+=mealBlockHTML(m.t, m.m, m.its.map(function(i){return {name:i.n,w:i.w,k:i.k,p:i.p,c:i.c,f:i.f};})); });
+  }
   var w=window.open("","_blank"); w.document.write(buildPrintDoc(name,ds,tk,tp,tc,tf,mh)); w.document.close();
 }
 
@@ -1163,6 +1241,54 @@ function renderAdminList(){
 }
 
 
+
+// ============================================================
+// API KEY
+// ============================================================
+function carregarKey() {
+  var k = localStorage.getItem("pc_apikey") || "";
+  if(k) {
+    document.getElementById("apikey-inp").value = k;
+    document.getElementById("apikey-dot").className = "apikey-ok ok";
+    document.getElementById("apikey-status").className = "apikey-status ok";
+    document.getElementById("apikey-status").textContent = "API Key salva e pronta para uso.";
+    document.getElementById("apikey-box").style.borderColor = "var(--vm)";
+    document.getElementById("cam-tip").style.display = "block";
+  }
+}
+
+function validarKey() {
+  var v = document.getElementById("apikey-inp").value.trim();
+  var dot = document.getElementById("apikey-dot");
+  if(v.startsWith("sk-ant-") && v.length > 20) {
+    dot.className = "apikey-ok ok";
+  } else if(v.length > 0) {
+    dot.className = "apikey-ok err";
+  } else {
+    dot.className = "apikey-ok";
+  }
+}
+
+function salvarKey() {
+  var v = document.getElementById("apikey-inp").value.trim();
+  var st = document.getElementById("apikey-status");
+  if(!v) {
+    st.className = "apikey-status err";
+    st.textContent = "Digite sua API Key antes de salvar.";
+    return;
+  }
+  if(!v.startsWith("sk-ant-")) {
+    st.className = "apikey-status err";
+    st.textContent = "A chave deve comecar com sk-ant-. Verifique e tente novamente.";
+    return;
+  }
+  localStorage.setItem("pc_apikey", v);
+  st.className = "apikey-status ok";
+  st.textContent = "API Key salva com sucesso! Agora voce pode analisar suas refeicoes.";
+  document.getElementById("apikey-dot").className = "apikey-ok ok";
+  document.getElementById("cam-tip").style.display = "block";
+}
+
 // ============================================================
 // CAMERA + IA
 // ============================================================
@@ -1170,7 +1296,7 @@ var camStream = null;
 var fotoTirada = false;
 
 function initCamera() {
-  // just make sure state is right when tab opens
+  carregarKey();
 }
 
 function abrirCamera() {
@@ -1243,9 +1369,11 @@ function analisarFoto(canvas) {
   document.getElementById("cam-err").classList.remove("visible");
   var base64 = canvas.toDataURL("image/jpeg", 0.85).split(",")[1];
   var prompt = "Voce e um nutricionista especialista em analise visual de alimentos. Analise esta imagem de uma refeicao e responda APENAS com um JSON valido, sem markdown, sem texto extra. O JSON deve ter exatamente este formato:\n{\n  \"alimentos\": [{\"nome\": string, \"porcao\": string, \"kcal\": number}],\n  \"total_kcal\": number,\n  \"proteinas_g\": number,\n  \"carboidratos_g\": number,\n  \"gorduras_g\": number,\n  \"observacao\": string\n}\nSeja realista nas estimativas. Se nao conseguir identificar a refeicao, retorne os campos zerados e explique na observacao.";
+  var apiKey = localStorage.getItem("pc_apikey") || "";
+  if(!apiKey) { mostrarErro("Configure sua API Key na aba Foto IA antes de analisar."); document.getElementById("cam-loading").style.display="none"; return; }
   fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
@@ -1305,6 +1433,169 @@ function mostrarErro(msg) {
   var el = document.getElementById("cam-err");
   el.textContent = msg;
   el.classList.add("visible");
+}
+
+
+// ============================================================
+// GROQ API KEY
+// ============================================================
+var prefRef = 6;
+var prefKcal = 0;
+
+function carregarGroqKey() {
+  var k = localStorage.getItem("pc_groqkey") || "";
+  if(k) {
+    document.getElementById("groq-key-inp").value = k;
+    document.getElementById("groq-key-dot").className = "apikey-ok ok";
+    var st = document.getElementById("groq-key-status");
+    st.className = "apikey-status ok";
+    st.textContent = "Groq API Key salva e pronta para uso.";
+  }
+}
+
+function validarGroqKey() {
+  var v = document.getElementById("groq-key-inp").value.trim();
+  var dot = document.getElementById("groq-key-dot");
+  if(v.startsWith("gsk_") && v.length > 20) {
+    dot.className = "apikey-ok ok";
+  } else if(v.length > 0) {
+    dot.className = "apikey-ok err";
+  } else {
+    dot.className = "apikey-ok";
+  }
+}
+
+function salvarGroqKey() {
+  var v = document.getElementById("groq-key-inp").value.trim();
+  var st = document.getElementById("groq-key-status");
+  if(!v) { st.className="apikey-status err"; st.textContent="Digite sua API Key antes de salvar."; return; }
+  if(!v.startsWith("gsk_")) { st.className="apikey-status err"; st.textContent="A chave Groq deve comecar com gsk_. Verifique e tente novamente."; return; }
+  localStorage.setItem("pc_groqkey", v);
+  st.className = "apikey-status ok";
+  st.textContent = "Groq API Key salva! Agora clique em Gerar com IA.";
+  document.getElementById("groq-key-dot").className = "apikey-ok ok";
+}
+
+function selRef(btn, v) {
+  prefRef = v;
+  btn.closest(".cr").querySelectorAll(".pb").forEach(function(b){b.classList.remove("on");});
+  btn.classList.add("on");
+}
+
+function selKcal(btn, v) {
+  prefKcal = v;
+  btn.closest(".cr").querySelectorAll(".pb").forEach(function(b){b.classList.remove("on");});
+  btn.classList.add("on");
+}
+
+function generatePlanGroq() {
+  var key = localStorage.getItem("pc_groqkey") || "";
+  if(!key) {
+    var st = document.getElementById("groq-key-status");
+    st.className = "apikey-status err";
+    st.textContent = "Configure e salve sua Groq API Key primeiro.";
+    document.getElementById("groq-config-box").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+
+  var restr = prefRest.length > 0 ? prefRest.join(", ") : "nenhuma";
+  var kcalInfo = prefKcal > 0 ? "Meta de calorias: " + prefKcal + " kcal por dia." : "Calorias conforme o objetivo.";
+  var prompt = "Crie um plano alimentar completo para um dia com " + prefRef + " refeicoes de 3 em 3 horas para uma pessoa com objetivo de " + prefObj + " peso. Restricoes alimentares: " + restr + ". " + kcalInfo + " Responda APENAS com JSON valido sem markdown. Formato exato:\n{\"refeicoes\":[{\"nome\":string,\"horario\":string,\"alimentos\":[{\"nome\":string,\"porcao\":string,\"kcal\":number,\"proteina_g\":number,\"carb_g\":number,\"gordura_g\":number}],\"total_kcal\":number,\"total_prot\":number,\"total_carb\":number,\"total_gord\":number}],\"total_dia_kcal\":number,\"total_dia_prot\":number,\"total_dia_carb\":number,\"total_dia_gord\":number,\"dica\":string}";
+
+  document.getElementById("groq-loading").style.display = "block";
+  document.getElementById("gen-result").innerHTML = "";
+  document.getElementById("auto-sv").style.display = "none";
+  document.getElementById("btn-gerar").disabled = true;
+
+  fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + key
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 2000,
+      messages: [
+        { role: "system", content: "Voce e um nutricionista brasileiro especialista em planejamento alimentar saudavel. Responda sempre em JSON valido sem markdown." },
+        { role: "user", content: prompt }
+      ]
+    })
+  }).then(function(r){ return r.json(); }).then(function(data) {
+    document.getElementById("groq-loading").style.display = "none";
+    document.getElementById("btn-gerar").disabled = false;
+    if(data.error) { mostrarErroGroq("Erro da API Groq: " + data.error.message); return; }
+    var text = "";
+    if(data.choices && data.choices[0] && data.choices[0].message) {
+      text = data.choices[0].message.content;
+    }
+    try {
+      var clean = text.replace(/```json|```/g,"").trim();
+      var res = JSON.parse(clean);
+      mostrarPlanGroq(res);
+    } catch(e) {
+      mostrarErroGroq("Nao foi possivel interpretar a resposta. Tente novamente.");
+    }
+  }).catch(function(err) {
+    document.getElementById("groq-loading").style.display = "none";
+    document.getElementById("btn-gerar").disabled = false;
+    mostrarErroGroq("Erro de conexao: " + err.message);
+  });
+}
+
+function mostrarPlanGroq(res) {
+  var el = document.getElementById("gen-result");
+  var html = "";
+
+  // totais do dia
+  html += '<div style="display:flex;gap:7px;margin-bottom:10px">'
+    + tcardHTML("Total do dia", res.total_dia_kcal||0, "kcal")
+    + tcardHTML("Proteina", res.total_dia_prot||0, "g")
+    + tcardHTML("Carboidrato", res.total_dia_carb||0, "g")
+    + tcardHTML("Gordura", res.total_dia_gord||0, "g")
+    + '</div>';
+
+  // refeicoes
+  if(res.refeicoes && res.refeicoes.length > 0) {
+    res.refeicoes.forEach(function(r) {
+      html += '<div class="gm" style="margin-bottom:8px;flex-direction:column;align-items:flex-start;gap:7px">'
+        + '<div style="display:flex;align-items:center;gap:8px;width:100%">'
+        + '<span class="gt">'+r.horario+'</span>'
+        + '<span class="gn">'+r.nome+'</span>'
+        + '<span style="margin-left:auto;font-size:11px;font-weight:700;color:var(--am)">'+r.total_kcal+' kcal</span>'
+        + '</div>';
+      if(r.alimentos && r.alimentos.length > 0) {
+        html += '<div style="width:100%;padding-left:4px">';
+        r.alimentos.forEach(function(a) {
+          html += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:.5px solid var(--bd)">'
+            + '<span style="color:var(--tx)">'+a.nome+' <span style="color:var(--ts)">('+a.porcao+')</span></span>'
+            + '<span style="color:var(--am);font-weight:700;flex-shrink:0;margin-left:8px">'+a.kcal+' kcal</span>'
+            + '</div>';
+        });
+        html += '<div style="font-size:11px;color:var(--ts);margin-top:5px">Prot: '+r.total_prot+'g &nbsp;&middot;&nbsp; Carb: '+r.total_carb+'g &nbsp;&middot;&nbsp; Gord: '+r.total_gord+'g</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    });
+  }
+
+  // dica
+  if(res.dica) {
+    html += '<div class="note" style="margin-top:8px">&#128161; <strong>Dica da IA:</strong> '+res.dica+'</div>';
+  }
+
+  el.innerHTML = html;
+
+  // salvar lastPlan para PDF/historico
+  lastPlan = { plan: res.refeicoes, obj: prefObj, rest: prefRest.slice(), fromGroq: true, raw: res };
+  document.getElementById("auto-sv").style.display = "block";
+  var d = new Date();
+  document.getElementById("auto-name").value = "Cardapio IA " + prefObj + " - " + d.toLocaleDateString("pt-BR");
+}
+
+function mostrarErroGroq(msg) {
+  document.getElementById("gen-result").innerHTML = '<div style="background:#fff0f0;border:.5px solid #fcc;border-radius:10px;padding:12px;font-size:13px;color:#c00;">'+msg+'</div>';
 }
 
 // ============================================================
